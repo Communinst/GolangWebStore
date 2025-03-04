@@ -1,45 +1,50 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
+	"log/slog"
+	"os"
 
+	cnfg "github.com/Communinst/GolangWebStore/backend/config"
+	srtg "github.com/Communinst/GolangWebStore/backend/storage"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
-const (
-	host     = "localhost"
-	port     = 5444
-	user     = "postgres"
-	password = "JayFaG90t669228"
-	dbname   = "postgres"
-)
-
-func main() {
-	db, err := imamoron()
+func InitEnv() error {
+	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Failed to connect to the database: %v", err)
-	} else {
-		fmt.Println("Successfully connected to the database!")
+		log.Print("No .env file found")
 	}
-	defer db.Close()
+	return err
 }
 
-func imamoron() (*sql.DB, error) {
+func main() {
 
-	connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	fmt.Printf("%s\n", connStr)
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open database connection: %w", err)
+	if err := InitEnv(); err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
 	}
 
-	err = db.Ping()
-	if err != nil {
-		return nil, fmt.Errorf("failed to ping database: %w", err)
+	config := setupConfig()
+	fmt.Println("mrn")
+	db := cnfg.OpenDB(&config.Database)
+
+	if err := cnfg.CloseDb(db); err != nil {
+		log.Fatal("Failed to cease DB connection!")
+	} else {
+		log.Print("Successfully ceased DB connection!")
 	}
 
-	return db, nil
+	return
+}
+
+func setupConfig() *cnfg.Config {
+	config, err := cnfg.LoadConfig()
+	if err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
+	}
+	return config
 }

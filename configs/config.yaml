@@ -4,7 +4,7 @@ http_server:
   timeout: 4s
 database:
   host: "localhost"
-  port: "5433"
-  username: "admin"
-  dbname: ""
+  port: "5444"
+  username: "postgres"
+  dbname: "postgres"
   sslmode: "disable"

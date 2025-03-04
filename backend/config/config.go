@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
+	_ "github.com/lib/pq"
 )
 
 type Config struct {
