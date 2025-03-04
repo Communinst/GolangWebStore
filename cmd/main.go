@@ -7,7 +7,7 @@ import (
 	"os"
 
 	cnfg "github.com/Communinst/GolangWebStore/backend/config"
-	srtg "github.com/Communinst/GolangWebStore/backend/storage"
+	strg "github.com/Communinst/GolangWebStore/backend/storage"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -29,9 +29,11 @@ func main() {
 
 	config := setupConfig()
 	fmt.Println("mrn")
-	db := cnfg.OpenDB(&config.Database)
+	db := strg.OpenDB(&config.Database)
 
-	if err := cnfg.CloseDb(db); err != nil {
+	server := server
+
+	if err := strg.CloseDb(db); err != nil {
 		log.Fatal("Failed to cease DB connection!")
 	} else {
 		log.Print("Successfully ceased DB connection!")
