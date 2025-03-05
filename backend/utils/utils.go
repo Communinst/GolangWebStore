@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/joho/godotenv"
 	cnfg "github.com/Communinst/GolangWebStore/backend/config"
+	"github.com/joho/godotenv"
 )
 
 func InitEnv() error {
@@ -16,6 +16,7 @@ func InitEnv() error {
 	}
 	return err
 }
+
 func setupConfig() *cnfg.Config {
 	config, err := cnfg.LoadConfig()
 	if err != nil {

@@ -5,22 +5,19 @@ import (
 	"log/slog"
 	"os"
 
-	
 	strg "github.com/Communinst/GolangWebStore/backend/storage"
-	"github.com/joho/godotenv"
+	utils "github.com/Communinst/GolangWebStore/backend/utils"
 	_ "github.com/lib/pq"
 )
 
-
-
 func main() {
 
-	if err := InitEnv(); err != nil {
+	if err := utils.InitEnv(); err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
 
-	config := setupConfig()
+	config := utils.setupConfig()
 
 	db := strg.InitDBConn(&config.Database)
 
@@ -32,4 +29,3 @@ func main() {
 
 	return
 }
-
