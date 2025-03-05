@@ -8,7 +8,7 @@ import (
 	cnfg "github.com/Communinst/GolangWebStore/backend/config"
 )
 
-func OpenDB(config *cnfg.Database) *sql.DB {
+func InitDBConn(config *cnfg.Database) *sql.DB {
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		config.Host,
 		config.Port,
@@ -30,6 +30,6 @@ func OpenDB(config *cnfg.Database) *sql.DB {
 	return db
 }
 
-func CloseDb(db *sql.DB) error {
+func CloseDBConn(db *sql.DB) error {
 	return db.Close()
 }

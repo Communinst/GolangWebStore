@@ -5,19 +5,14 @@ create table roles
     description varchar(127) not null,
     significance_order int not null
 );
-create table statuses
-(
-    status_id int not null primary key,
-    name varchar(31) not null unique
-);
 create table users
 (
     user_id serial primary key,
     login varchar(63) not null unique,
     password varchar(63) NOT NULL,
     nickname varchar(63) not null,
+    email varchar(127) not null unique,
     sign_up_date timestamp not null,
-    status_id int not null references statuses(status_id)
 );
 create table user_roles
 (
@@ -45,6 +40,7 @@ create table genres
     name varchar(31) not null unique,
     description varchar(63) not null unique
 );
+
 create table games 
 (
     game_id serial primary key,
@@ -100,6 +96,17 @@ create table wishings
 (
     wishing_id serial primary key,
     user_id int not null references users(user_id),
+    game_id int not null references games(game_id)
+);
+create table carts
+(
+    cart_id serial primary key,
+    user_id int not null references users(user_id)
+);
+create table cart_games 
+(
+    cart_games_id serial primary key,
+    cart_id int not null references carts(cart_id),
     game_id int not null references games(game_id)
 );
 create table ownerships
