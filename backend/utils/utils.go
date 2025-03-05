@@ -9,14 +9,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func InitEnv() error {
-	err := godotenv.Load()
-	if err != nil {
-		log.Print("No .env file found")
-	}
-	return err
-}
-
 func setupConfig() *cnfg.Config {
 	config, err := cnfg.LoadConfig()
 	if err != nil {
@@ -24,4 +16,12 @@ func setupConfig() *cnfg.Config {
 		os.Exit(1)
 	}
 	return config
+}
+
+func InitEnv() error {
+	err := godotenv.Load()
+	if err != nil {
+		log.Print("No .env file found")
+	}
+	return err
 }
