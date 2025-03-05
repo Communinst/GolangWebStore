@@ -16,6 +16,7 @@ func main() {
 		slog.Error(err.Error())
 		os.Exit(1)
 	}
+	
 	config := utils.setupConfig()
 
 	db := strg.InitDBConn(&config.Database)
