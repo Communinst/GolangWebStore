@@ -8,6 +8,6 @@ type User struct {
 	Password   string    `json:"password" db:"password"`
 	Nickname   string    `json:"nickname" db:"nickname"`
 	Email      string    `json:"email" db:"email"`
-	SingUpDate time.Time `json:"sign_up_date" db:"sign_up_date"`
-	RoleId     []int     `json:"role_id"`
+	SignUpDate time.Time `json:"sign_up_date" db:"sign_up_date"`
+	RoleId     int       `json:"role_id"`
 }

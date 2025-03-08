@@ -1,10 +1,11 @@
-package repository
+package Repository
 
 import (
 	"context"
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
 
@@ -17,14 +18,15 @@ type userRepo struct {
 	db *sqlx.DB
 }
 
-func newUserRepo(db *sqlx.DB) *userRepo {
+func NewUserRepo(db *sqlx.DB) *userRepo {
 	return &userRepo{
 		db: db,
 	}
 }
 
-func (u *userRepo) postUser(ctx context.Context, user *entities.User) (int, error) {
+func (u *userRepo) PostUser(ctx context.Context, user *entities.User) (int, error) {
 	var result_id int
+	fmt.Println("MORON!")
 
 	tx, err := u.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -35,15 +37,16 @@ func (u *userRepo) postUser(ctx context.Context, user *entities.User) (int, erro
 		}
 	}
 
-	query := fmt.Sprintf(`INSERT INTO %s (login, password, nickname, email, sing_up_date)
-		VALUES ($1 $2 $3 $4 $5) RETURNING user_id`, usersTable)
+	query := fmt.Sprintf(`INSERT INTO %s (login, password, nickname, email, sign_up_date, role_id)
+		VALUES ($1, $2, $3, $4, $5, $6) RETURNING user_id`, usersTable)
 
 	err = tx.QueryRowContext(ctx, query,
 		user.Login,
 		user.Password,
 		user.Nickname,
 		user.Email,
-		user.SingUpDate).Scan(&result_id)
+		user.SignUpDate,
+		user.RoleId).Scan(&result_id)
 
 	if err != nil {
 		tx.Rollback()
@@ -58,10 +61,11 @@ func (u *userRepo) postUser(ctx context.Context, user *entities.User) (int, erro
 		}
 	}
 
+	log.Printf("Post user succeded.")
 	return result_id, err
 }
 
-func (u *userRepo) getUser(ctx context.Context, userId int) (*entities.User, error) {
+func (u *userRepo) GetUser(ctx context.Context, userId int) (*entities.User, error) {
 	var resultUser entities.User
 
 	query := fmt.Sprintf(`SELECT * FROM %s WHERE user_id = $1`, usersTable)
@@ -85,7 +89,7 @@ func (u *userRepo) getUser(ctx context.Context, userId int) (*entities.User, err
 	}
 }
 
-func (u *userRepo) getAllUsers(ctx context.Context) ([]entities.User, error) {
+func (u *userRepo) GetAllUsers(ctx context.Context) ([]entities.User, error) {
 	var resultUsers []entities.User
 
 	query := fmt.Sprintf(`SELECT * FROM %s`, usersTable)
@@ -109,7 +113,7 @@ func (u *userRepo) getAllUsers(ctx context.Context) ([]entities.User, error) {
 	}
 }
 
-func (u *userRepo) deleteUser(ctx context.Context, userId int) error {
+func (u *userRepo) DeleteUser(ctx context.Context, userId int) error {
 	tx, err := u.db.BeginTx(ctx, nil)
 	if err != nil {
 		slog.Error("transaction initiation error")
@@ -159,7 +163,7 @@ func (u *userRepo) deleteUser(ctx context.Context, userId int) error {
 	return nil
 }
 
-func (u *userRepo) putUserRole(ctx context.Context, userId int, roleId int) error {
+func (u *userRepo) PutUserRole(ctx context.Context, userId int, roleId int) error {
 	tx, err := u.db.BeginTx(ctx, nil)
 	if err != nil {
 		slog.Error("transaction initiation error")

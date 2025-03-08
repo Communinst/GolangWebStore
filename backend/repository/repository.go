@@ -1,4 +1,4 @@
-package repository
+package Repository
 
 import (
 	"context"
@@ -21,50 +21,51 @@ const (
 	reviewsTable       = "reviews"
 )
 
-type AuthorizationRepo interface {
-}
-type CartRepo interface {
-}
-type CompanyRepo interface {
-}
-type DiscountRepo interface {
-}
-type GameRepo interface {
-}
-type GenreRepo interface {
-}
-type OwnershipRepo interface {
-}
-type ReviewRepo interface {
-}
-type RoleRepo interface {
-}
+// type AuthorizationRepo interface {
+// }
+// type CartRepo interface {
+// }
+// type CompanyRepo interface {
+// }
+// type DiscountRepo interface {
+// }
+// type GameRepo interface {
+// }
+// type GenreRepo interface {
+// }
+// type OwnershipRepo interface {
+// }
+// type ReviewRepo interface {
+// }
+// type RoleRepo interface {
+// }
 type UserRepo interface {
-	postUser(ctx context.Context, user *entities.User) (int, error)
-	getUser(ctx context.Context, userId int) (*entities.User, error)
-	getAllUsers(ctx context.Context) ([]entities.User, error)
-	deleteUser(ctx context.Context, userId int) error
-	putUserRole(ctx context.Context, userId int, roleId int) error
+	PostUser(ctx context.Context, user *entities.User) (int, error)
+	GetUser(ctx context.Context, userId int) (*entities.User, error)
+	GetAllUsers(ctx context.Context) ([]entities.User, error)
+	DeleteUser(ctx context.Context, userId int) error
+	PutUserRole(ctx context.Context, userId int, roleId int) error
 }
-type WalletRepo interface {
-}
+
+// type WalletRepo interface {
+// }
 
 type Repository struct {
-	AuthorizationRepo
-	CartRepo
-	CompanyRepo
-	DiscountRepo
-	GameRepo
-	GenreRepo
-	OwnershipRepo
-	ReviewRepo
-	RoleRepo
+	// AuthorizationRepo
+	// CartRepo
+	// CompanyRepo
+	// DiscountRepo
+	// GameRepo
+	// GenreRepo
+	// OwnershipRepo
+	// ReviewRepo
+	// RoleRepo
 	UserRepo
-	WalletRepo
+	// WalletRepo
 }
 
-func newRepsitory(db *sqlx.DB) *Repository {
+func New(db *sqlx.DB) *Repository {
 	return &Repository{
-		UserRepo: newUserRepo(db),
+		UserRepo: NewUserRepo(db),
 	}
 }

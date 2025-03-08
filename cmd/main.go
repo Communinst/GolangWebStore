@@ -1,13 +1,16 @@
 package main
 
 import (
+	"context"
 	"log"
 	"log/slog"
 	"os"
+	"time"
 
 	cnfg "github.com/Communinst/GolangWebStore/backend/config"
+	entities "github.com/Communinst/GolangWebStore/backend/entity"
+	Repository "github.com/Communinst/GolangWebStore/backend/repository"
 	strg "github.com/Communinst/GolangWebStore/backend/storage"
-	"github.com/Communinst/GolangWebStore/backend/repository"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -40,8 +43,18 @@ func main() {
 
 	db := strg.InitDBConn(&config.Database)
 	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\init.sql")
+	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\roles.sql")
 
-	repository := repository.newRepsitory(db)
+	repository := Repository.New(db)
+
+	repository.UserRepo.PostUser(context.Background(), &entities.User{
+		Login:      "moron",
+		Password:   "Slaveyan",
+		Nickname:   "Gypsy Crusader",
+		Email:      "GoodOldCrusafiction@execute.com",
+		SignUpDate: time.Now(),
+		RoleId:     1,
+	})
 
 	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\drop.sql")
 	if err := strg.CloseDBConn(db); err != nil {
