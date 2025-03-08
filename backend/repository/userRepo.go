@@ -35,7 +35,7 @@ func (u *userRepo) postUser(ctx context.Context, user *entities.User) (int, erro
 		}
 	}
 
-	query := fmt.Sprintf(`INSERT INTO users (login, password, nickname, email, sing_up_date)
+	query := fmt.Sprintf(`INSERT INTO %s (login, password, nickname, email, sing_up_date)
 		VALUES ($1 $2 $3 $4 $5) RETURNING user_id`, usersTable)
 
 	err = tx.QueryRowContext(ctx, query,

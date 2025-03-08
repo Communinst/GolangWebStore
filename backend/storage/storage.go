@@ -1,14 +1,14 @@
 package storage
 
 import (
-	"database/sql"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"log/slog"
 	"net/http"
+	"os"
 
 	cnfg "github.com/Communinst/GolangWebStore/backend/config"
+	customErrors "github.com/Communinst/GolangWebStore/backend/errors"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -34,9 +34,9 @@ func InitDBConn(config *cnfg.Database) *sqlx.DB {
 	return db
 }
 
-func DefineDBTableByScript(db *sqlx.DB, scriptPath string) error {
+func RunDBTableScript(db *sqlx.DB, scriptPath string) error {
 
-	script, err := ioutil.ReadFile(scriptPath)
+	script, err := os.ReadFile(scriptPath)
 	if err != nil {
 		log.Fatalf("Failed to read SQL script file: %v", err)
 	}
@@ -50,13 +50,28 @@ func DefineDBTableByScript(db *sqlx.DB, scriptPath string) error {
 		}
 	}
 
-	_, err = db.ExecContext(ctx, string(script))
+	_, err = db.Exec(string(script))
 	if err != nil {
+		tx.Rollback()
 		log.Fatalf("Failed to execute SQL script: %v", err)
+		return &customErrors.ErrorWithStatusCode{
+			HTTPStatus: http.StatusInternalServerError,
+			Msg:        fmt.Sprintf("failed to execute SQL script down the path: %s", scriptPath),
+		}
 	}
 
+	if err = tx.Commit(); err != nil {
+		slog.Error("transaction fulfillment error")
+		return &customErrors.ErrorWithStatusCode{
+			HTTPStatus: http.StatusInternalServerError,
+			Msg:        "transaction fulfillment failed",
+		}
+	}
+
+	log.Print("Script down the path:", scriptPath, ": succesfull run")
+	return nil
 }
 
-func CloseDBConn(db *sql.DB) error {
+func CloseDBConn(db *sqlx.DB) error {
 	return db.Close()
 }

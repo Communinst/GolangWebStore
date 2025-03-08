@@ -63,7 +63,7 @@ type Repository struct {
 	WalletRepo
 }
 
-func newRepo(db *sqlx.DB) *Repository {
+func newRepsitory(db *sqlx.DB) *Repository {
 	return &Repository{
 		UserRepo: newUserRepo(db),
 	}

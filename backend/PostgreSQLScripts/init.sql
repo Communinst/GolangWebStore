@@ -12,8 +12,8 @@ create table users
     password varchar(63) NOT NULL,
     nickname varchar(63) not null,
     email varchar(127) not null unique,
-    role_id int not null references roles(role_id)
-    sign_up_date timestamp not null,
+    role_id int not null references roles(role_id),
+    sign_up_date timestamp not null
 );
 create table wallets
 (
@@ -43,7 +43,7 @@ create table games
     name varchar(63) not null unique,
     description text not null,
     price int not null check (price >= 0),
-    release_date timestamp not null,
+    release_date timestamp not null
 );
 create table games_genres
 (
@@ -55,7 +55,7 @@ create table games_developed_by
 (
     game_developer_id serial primary key,
     game_id int not null references games(game_id),
-    company_id int not null references companies(company_id)
+    company_id int not null references companies(company_id),
     good_percentage int not null check (good_percentage between 0 and 100),
     good_percentage_latest int not null check (good_percentage_latest between 0 and 100)
 );
@@ -109,7 +109,7 @@ create table ownerships
     ownership_id serial primary key,
     user_id int not null references users(user_id),
     game_id int not null references games(game_id),
-    minutes_spent bigint not null check (time_spent >= 0),
+    minutes_spent bigint not null check (minutes_spent >= 0),
     receipt_date timestamp not null
 );
     -- create table achieved_by_users

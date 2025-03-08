@@ -7,6 +7,7 @@ import (
 
 	cnfg "github.com/Communinst/GolangWebStore/backend/config"
 	strg "github.com/Communinst/GolangWebStore/backend/storage"
+	"github.com/Communinst/GolangWebStore/backend/repository"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -38,12 +39,14 @@ func main() {
 	config := setupConfig()
 
 	db := strg.InitDBConn(&config.Database)
+	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\init.sql")
 
+	repository := repository.newRepsitory(db)
+
+	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\drop.sql")
 	if err := strg.CloseDBConn(db); err != nil {
 		log.Fatal("Failed to cease DB connection!")
 	} else {
 		log.Print("Successfully ceased DB connection!")
 	}
-
-	return
 }
