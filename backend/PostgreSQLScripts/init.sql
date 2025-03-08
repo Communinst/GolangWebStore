@@ -73,14 +73,14 @@ create table discounts
     start_date timestamp not null,
     cease_date timestamp not null
 );
-create table achievements
-(
-    achievement_id serial primary key,
-    name varchar(63) not null,
-    description varchar(255) not null,
-    game_id int not null references games(game_id)
-    frequency_percentage decimal(4, 1) not null check (frequency <= 100.0)
-);
+-- create table achievements
+-- (
+--     achievement_id serial primary key,
+--     name varchar(63) not null,
+--     description varchar(255) not null,
+--     game_id int not null references games(game_id)
+--     frequency_percentage decimal(4, 1) not null check (frequency <= 100.0)
+-- );
 
 
 create table reviews
@@ -92,12 +92,12 @@ create table reviews
     game_id int not null references games(game_id),
     date timestamp not null
 );
-create table wishings
-(
-    wishing_id serial primary key,
-    user_id int not null references users(user_id),
-    game_id int not null references games(game_id)
-);
+-- create table wishings
+-- (
+--     wishing_id serial primary key,
+--     user_id int not null references users(user_id),
+--     game_id int not null references games(game_id)
+-- );
 create table carts
 (
     cart_id serial primary key,
@@ -117,9 +117,9 @@ create table ownerships
     minutes_spent bigint not null check (time_spent >= 0),
     receipt_date timestamp not null
 );
-create table achieved_by_users
-(
-    user_achievement_id serial primary key,
-    user_id int not null references users(user_id),
-    game_id int not null references games(game_id)
-);
+    -- create table achieved_by_users
+    -- (
+    --     user_achievement_id serial primary key,
+    --     user_id int not null references users(user_id),
+    --     game_id int not null references games(game_id)
+    -- );

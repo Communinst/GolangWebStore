@@ -5,5 +5,6 @@ import (
 )
 
 type Handler struct {
-	Service
+	service *srvc.Service
 }
+
