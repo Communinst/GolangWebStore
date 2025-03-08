@@ -1,4 +1,4 @@
-package errors
+package customErrors
 
 type ErrorWithStatusCode struct {
 	HTTPStatus int

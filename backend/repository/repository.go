@@ -1,5 +1,12 @@
 package repository
 
+import (
+	"context"
+
+	entities "github.com/Communinst/GolangWebStore/backend/entity"
+	"github.com/jmoiron/sqlx"
+)
+
 const (
 	usersTable         = "users"
 	rolesTable         = "roles"
@@ -33,6 +40,11 @@ type ReviewRepo interface {
 type RoleRepo interface {
 }
 type UserRepo interface {
+	postUser(ctx context.Context, user *entities.User) (int, error)
+	getUser(ctx context.Context, userId int) (*entities.User, error)
+	getAllUsers(ctx context.Context) ([]entities.User, error)
+	deleteUser(ctx context.Context, userId int) error
+	putUserRole(ctx context.Context, userId int, roleId int) error
 }
 type WalletRepo interface {
 }
@@ -51,6 +63,8 @@ type Repository struct {
 	WalletRepo
 }
 
-func newRepo() *Repository {
-	return &Repository{}
+func newRepo(db *sqlx.DB) *Repository {
+	return &Repository{
+		UserRepo: newUserRepo(db),
+	}
 }

@@ -12,13 +12,8 @@ create table users
     password varchar(63) NOT NULL,
     nickname varchar(63) not null,
     email varchar(127) not null unique,
-    sign_up_date timestamp not null,
-);
-create table user_roles
-(
-    user_role_id serial not null primary key,
-    user_id int not null references users(user_id),
     role_id int not null references roles(role_id)
+    sign_up_date timestamp not null,
 );
 create table wallets
 (
