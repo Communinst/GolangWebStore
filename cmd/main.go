@@ -55,6 +55,19 @@ func main() {
 		SignUpDate: time.Now(),
 		RoleId:     1,
 	})
+	repository.UserRepo.PostUser(context.Background(), &entities.User{
+		Login:      "gay",
+		Password:   "Slaveyan",
+		Nickname:   "Gypsy Crusader",
+		Email:      "GodOldCrusafiction@execute.com",
+		SignUpDate: time.Now(),
+		RoleId:     1,
+	})
+	data, _ := repository.UserRepo.GetUser(context.Background(), 1)
+	data.Print()
+
+	//repository.UserRepo.PutUserRole(context.Background(), 1, 2)
+	//repository.UserRepo.DeleteUser(context.Background(), 1)
 
 	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\drop.sql")
 	if err := strg.CloseDBConn(db); err != nil {

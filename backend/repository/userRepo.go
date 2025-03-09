@@ -26,7 +26,6 @@ func NewUserRepo(db *sqlx.DB) *userRepo {
 
 func (u *userRepo) PostUser(ctx context.Context, user *entities.User) (int, error) {
 	var result_id int
-	fmt.Println("MORON!")
 
 	tx, err := u.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -61,32 +60,34 @@ func (u *userRepo) PostUser(ctx context.Context, user *entities.User) (int, erro
 		}
 	}
 
-	log.Printf("Post user succeded.")
+	log.Printf("User with email %s posted successfully", user.Email)
 	return result_id, err
 }
-
 func (u *userRepo) GetUser(ctx context.Context, userId int) (*entities.User, error) {
 	var resultUser entities.User
 
 	query := fmt.Sprintf(`SELECT * FROM %s WHERE user_id = $1`, usersTable)
 
 	err := u.db.GetContext(ctx, &resultUser, query, userId)
-	if err == nil {
-		return &resultUser, err
-	}
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, &customErrors.ErrorWithStatusCode{
+				HTTPStatus: http.StatusNotFound,
+				Msg:        fmt.Sprintf("user with id %d was not found", userId),
+			}
+		}
 
-	if errors.Is(err, sql.ErrNoRows) {
-		return &resultUser, &customErrors.ErrorWithStatusCode{
+		slog.Error("unknown error obtaining user by id", "error", err)
+		return nil, &customErrors.ErrorWithStatusCode{
 			HTTPStatus: http.StatusInternalServerError,
-			Msg:        fmt.Sprintf("user with %d if wasn't found", userId),
+			Msg:        "unknown internal server error occurred",
 		}
 	}
 
-	slog.Error("unknown error obtaining user by it")
-	return &resultUser, &customErrors.ErrorWithStatusCode{
-		HTTPStatus: http.StatusInternalServerError,
-		Msg:        "unknown interanal server error occured",
-	}
+	
+
+	log.Printf("User by id %d was obtained", userId)
+	return &resultUser, nil
 }
 
 func (u *userRepo) GetAllUsers(ctx context.Context) ([]entities.User, error) {
@@ -160,6 +161,7 @@ func (u *userRepo) DeleteUser(ctx context.Context, userId int) error {
 		}
 	}
 
+	log.Printf("User by %d id was deleted", userId)
 	return nil
 }
 
@@ -212,5 +214,6 @@ func (u *userRepo) PutUserRole(ctx context.Context, userId int, roleId int) erro
 		}
 	}
 
+	log.Printf("User's by %d id role updated", userId)
 	return nil
 }
