@@ -5,11 +5,11 @@ import (
 	"log"
 	"log/slog"
 	"os"
-	"time"
 
 	cnfg "github.com/Communinst/GolangWebStore/backend/config"
 	entities "github.com/Communinst/GolangWebStore/backend/entity"
-	Repository "github.com/Communinst/GolangWebStore/backend/repository"
+	"github.com/Communinst/GolangWebStore/backend/repository"
+	"github.com/Communinst/GolangWebStore/backend/service"
 	strg "github.com/Communinst/GolangWebStore/backend/storage"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -45,29 +45,30 @@ func main() {
 	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\init.sql")
 	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\roles.sql")
 
-	repository := Repository.New(db)
+	repository := repository.New(db)
+	service := service.New(repository)
 
-	repository.UserRepo.PostUser(context.Background(), &entities.User{
-		Login:      "moron",
-		Password:   "Slaveyan",
-		Nickname:   "Gypsy Crusader",
-		Email:      "GoodOldCrusafiction@execute.com",
-		SignUpDate: time.Now(),
-		RoleId:     1,
+	repository.CompanyRepo.PostCompany(context.Background(), &entities.Company{
+		Name: "Slaveynia",
 	})
-	repository.UserRepo.PostUser(context.Background(), &entities.User{
-		Login:      "gay",
-		Password:   "Slaveyan",
-		Nickname:   "Gypsy Crusader",
-		Email:      "GodOldCrusafiction@execute.com",
-		SignUpDate: time.Now(),
-		RoleId:     1,
+	repository.CompanyRepo.PostCompany(context.Background(), &entities.Company{
+		Name: "Bastardsk",
 	})
-	data, _ := repository.UserRepo.GetUser(context.Background(), 1)
-	data.Print()
+	repository.CompanyRepo.GetCompany(context.Background(), 2)
+	repository.CompanyRepo.GetAllCompanies(context.Background())
 
-	//repository.UserRepo.PutUserRole(context.Background(), 1, 2)
-	//repository.UserRepo.DeleteUser(context.Background(), 1)
+	repository.GameRepo.PostGame(context.Background(), &entities.Game{
+		PublisherId: 1,
+		Name:        "Slaughtery",
+	})
+	repository.GameRepo.PostGame(context.Background(), &entities.Game{
+		PublisherId: 2,
+		Name:        "BadAssovsk",
+	})
+	repository.GameRepo.GetGame(context.Background(), 2)
+	repository.GameRepo.GetAllGames(context.Background())
+	repository.GameRepo.DeleteGame(context.Background(), 1)
+	repository.CompanyRepo.DeleteCompany(context.Background(), 1)
 
 	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\drop.sql")
 	if err := strg.CloseDBConn(db); err != nil {

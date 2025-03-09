@@ -12,7 +12,7 @@ type User struct {
 	Nickname   string    `json:"nickname" db:"nickname"`
 	Email      string    `json:"email" db:"email"`
 	SignUpDate time.Time `json:"sign_up_date" db:"sign_up_date"`
-	RoleId     int       `json:"role_id" db: "role_id"`
+	RoleId     int       `json:"role_id" db:"role_id"`
 }
 
 func (u *User) Print() {

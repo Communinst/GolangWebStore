@@ -14,19 +14,18 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type userRepo struct {
+type gameRepo struct {
 	db *sqlx.DB
 }
 
-func NewUserRepo(db *sqlx.DB) *userRepo {
-	return &userRepo{
+func NewGameRepo(db *sqlx.DB) *gameRepo {
+	return &gameRepo{
 		db: db,
 	}
 }
 
-func (repo *userRepo) PostUser(ctx context.Context, user *entities.User) (int, error) {
-	var result_id int
-
+func (repo *gameRepo) PostGame(ctx context.Context, game *entities.Game) (int, error) {
+	var resultId int
 	tx, err := repo.db.BeginTx(ctx, nil)
 	if err != nil {
 		slog.Error("transaction initiation error")
@@ -36,16 +35,15 @@ func (repo *userRepo) PostUser(ctx context.Context, user *entities.User) (int, e
 		}
 	}
 
-	query := fmt.Sprintf(`INSERT INTO %s (login, password, nickname, email, sign_up_date, role_id)
-		VALUES ($1, $2, $3, $4, $5, $6) RETURNING user_id`, usersTable)
+	query := fmt.Sprintf(`INSERT INTO %s (publisher_id, name, description, price, release_date)
+		VALUES ($1, $2, $3, $4, $5) RETURNING game_id`, gamesTable)
 
 	err = tx.QueryRowContext(ctx, query,
-		user.Login,
-		user.Password,
-		user.Nickname,
-		user.Email,
-		user.SignUpDate,
-		user.RoleId).Scan(&result_id)
+		game.PublisherId,
+		game.Name,
+		game.Description,
+		game.Price,
+		game.Releasedate).Scan(&resultId)
 
 	if err != nil {
 		tx.Rollback()
@@ -60,61 +58,59 @@ func (repo *userRepo) PostUser(ctx context.Context, user *entities.User) (int, e
 		}
 	}
 
-	log.Printf("User with email %s posted successfully", user.Email)
-	return result_id, err
+	log.Printf("Game with name %s posted successfully", game.Name)
+	return resultId, err
 }
 
-func (repo *userRepo) GetUser(ctx context.Context, userId int) (*entities.User, error) {
-	var resultUser entities.User
+func (repo *gameRepo) GetGame(ctx context.Context, gameId int) (*entities.Game, error) {
+	var resultGame entities.Game
 
-	query := fmt.Sprintf(`SELECT * FROM %s WHERE user_id = $1`, usersTable)
+	query := fmt.Sprintf(`SELECT * FROM %s WHERE game_id = $1`, gamesTable)
 
-	err := repo.db.GetContext(ctx, &resultUser, query, userId)
+	err := repo.db.GetContext(ctx, &resultGame, query, gameId)
 	if err == nil {
-		log.Printf("User by %d id was obtained", userId)
-		return &resultUser, err
+		log.Printf("Game with id %d was obtained", gameId)
+		return &resultGame, nil
 	}
-
 	if errors.Is(err, sql.ErrNoRows) {
-		return &resultUser, &customErrors.ErrorWithStatusCode{
-			HTTPStatus: http.StatusInternalServerError,
-			Msg:        fmt.Sprintf("user with %d if wasn't found", userId),
+		return nil, &customErrors.ErrorWithStatusCode{
+			HTTPStatus: http.StatusNotFound,
+			Msg:        fmt.Sprintf("game with id %d was not found", gameId),
 		}
 	}
 
-	slog.Error("unknown error obtaining user by id")
-	return &resultUser, &customErrors.ErrorWithStatusCode{
+	slog.Error("unknown error obtaining user by id", "error", err)
+	return nil, &customErrors.ErrorWithStatusCode{
+		HTTPStatus: http.StatusInternalServerError,
+		Msg:        "unknown internal server error occurred",
+	}
+}
+
+func (repo *gameRepo) GetAllGames(ctx context.Context) ([]entities.Game, error) {
+	var resultGames []entities.Game
+
+	query := fmt.Sprintf(`SELECT * FROM %s`, gamesTable)
+
+	err := repo.db.SelectContext(ctx, &resultGames, query)
+	if err == nil {
+		return resultGames, err
+	}
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return resultGames, &customErrors.ErrorWithStatusCode{
+			HTTPStatus: http.StatusInternalServerError,
+			Msg:        "no game found",
+		}
+	}
+
+	slog.Error("unknown error obtaining game by id")
+	return resultGames, &customErrors.ErrorWithStatusCode{
 		HTTPStatus: http.StatusInternalServerError,
 		Msg:        "unknown interanal server error occured",
 	}
 }
 
-func (repo *userRepo) GetAllUsers(ctx context.Context) ([]entities.User, error) {
-	var resultUsers []entities.User
-
-	query := fmt.Sprintf(`SELECT * FROM %s`, usersTable)
-
-	err := repo.db.SelectContext(ctx, &resultUsers, query)
-	if err == nil {
-		log.Print("Users were obtained")
-		return resultUsers, err
-	}
-
-	if errors.Is(err, sql.ErrNoRows) {
-		return resultUsers, &customErrors.ErrorWithStatusCode{
-			HTTPStatus: http.StatusInternalServerError,
-			Msg:        "no user found",
-		}
-	}
-
-	slog.Error("unknown error obtaining user by it")
-	return resultUsers, &customErrors.ErrorWithStatusCode{
-		HTTPStatus: http.StatusInternalServerError,
-		Msg:        "unknown interanal server error occured",
-	}
-}
-
-func (repo *userRepo) DeleteUser(ctx context.Context, userId int) error {
+func (repo *gameRepo) DeleteGame(ctx context.Context, gameId int) error {
 	tx, err := repo.db.BeginTx(ctx, nil)
 	if err != nil {
 		slog.Error("transaction initiation error")
@@ -124,15 +120,15 @@ func (repo *userRepo) DeleteUser(ctx context.Context, userId int) error {
 		}
 	}
 
-	query := fmt.Sprintf(`DELETE FROM %s WHERE user_id = $1`, usersTable)
+	query := fmt.Sprintf(`DELETE FROM %s WHERE game_id = $1`, gamesTable)
 
-	result, err := tx.ExecContext(ctx, query, userId)
+	result, err := tx.ExecContext(ctx, query, gameId)
 	if err != nil {
 		tx.Rollback()
-		slog.Error(fmt.Sprintf("error deleting user by %d id", userId), "err", err.Error())
+		slog.Error(fmt.Sprintf("error deleting game by %d id", gameId), "err", err.Error())
 		return &customErrors.ErrorWithStatusCode{
 			HTTPStatus: http.StatusInternalServerError,
-			Msg:        "failed to delete user",
+			Msg:        "failed to delete game",
 		}
 	}
 
@@ -142,7 +138,7 @@ func (repo *userRepo) DeleteUser(ctx context.Context, userId int) error {
 		slog.Error("error getting amount of affected rows", "err", err.Error())
 		return &customErrors.ErrorWithStatusCode{
 			HTTPStatus: http.StatusInternalServerError,
-			Msg:        "failed to delete user",
+			Msg:        "failed to delete game",
 		}
 	}
 
@@ -157,15 +153,15 @@ func (repo *userRepo) DeleteUser(ctx context.Context, userId int) error {
 	if affectedAmount == 0 {
 		return &customErrors.ErrorWithStatusCode{
 			HTTPStatus: http.StatusInternalServerError,
-			Msg:        fmt.Sprintf("User by %d id wasn't found", userId),
+			Msg:        fmt.Sprintf("User by %d id wasn't found", gameId),
 		}
 	}
 
-	log.Printf("User by %d id was deleted", userId)
+	log.Printf("Game by %d id was deleted", gameId)
 	return nil
 }
 
-func (repo *userRepo) PutUserRole(ctx context.Context, userId int, roleId int) error {
+func (repo *gameRepo) PutGamePrice(ctx context.Context, gameId int, price int) error {
 	tx, err := repo.db.BeginTx(ctx, nil)
 	if err != nil {
 		slog.Error("transaction initiation error")
@@ -176,16 +172,16 @@ func (repo *userRepo) PutUserRole(ctx context.Context, userId int, roleId int) e
 	}
 
 	query := fmt.Sprintf(`UPDATE %s
-		SET role_id = $1
-		WHERE user_id = $2`, usersTable)
+		SET price = $1
+		WHERE game_id = $2`, gamesTable)
 
-	result, err := tx.ExecContext(ctx, query, roleId, userId)
+	result, err := tx.ExecContext(ctx, query, price, gameId)
 	if err != nil {
 		tx.Rollback()
-		slog.Error(fmt.Sprintf("error updating role of user by %d id", userId), "err", err.Error())
+		slog.Error(fmt.Sprintf("error updating price of game with %d id", gameId), "err", err.Error())
 		return &customErrors.ErrorWithStatusCode{
 			HTTPStatus: http.StatusInternalServerError,
-			Msg:        "failed to update user's role",
+			Msg:        "failed to update game's price",
 		}
 	}
 
@@ -195,7 +191,7 @@ func (repo *userRepo) PutUserRole(ctx context.Context, userId int, roleId int) e
 		slog.Error("error getting amount of affected rows", "err", err.Error())
 		return &customErrors.ErrorWithStatusCode{
 			HTTPStatus: http.StatusInternalServerError,
-			Msg:        "failed to update user's role",
+			Msg:        "failed to update game's price",
 		}
 	}
 
@@ -210,10 +206,10 @@ func (repo *userRepo) PutUserRole(ctx context.Context, userId int, roleId int) e
 	if affectedAmount == 0 {
 		return &customErrors.ErrorWithStatusCode{
 			HTTPStatus: http.StatusInternalServerError,
-			Msg:        fmt.Sprintf("User by %d id wasn't found", userId),
+			Msg:        fmt.Sprintf("Game by %d id wasn't found", gameId),
 		}
 	}
 
-	log.Printf("User's by %d id role updated", userId)
+	log.Printf("Game's by %d id price updated", gameId)
 	return nil
 }

@@ -1,4 +1,4 @@
-package Repository
+package repository
 
 import (
 	"context"
@@ -9,6 +9,8 @@ import (
 
 const (
 	usersTable         = "users"
+	gamesTable         = "games"
+	companiesTable     = "companies"
 	rolesTable         = "roles"
 	storesTable        = "stores"
 	categoriesTable    = "categories"
@@ -25,12 +27,10 @@ const (
 // }
 // type CartRepo interface {
 // }
-// type CompanyRepo interface {
-// }
+
 // type DiscountRepo interface {
 // }
-// type GameRepo interface {
-// }
+
 // type GenreRepo interface {
 // }
 // type OwnershipRepo interface {
@@ -47,15 +47,30 @@ type UserRepo interface {
 	PutUserRole(ctx context.Context, userId int, roleId int) error
 }
 
+type GameRepo interface {
+	PostGame(ctx context.Context, game *entities.Game) (int, error)
+	GetGame(ctx context.Context, gameId int) (*entities.Game, error)
+	GetAllGames(ctx context.Context) ([]entities.Game, error)
+	DeleteGame(ctx context.Context, gameId int) error
+	PutGamePrice(ctx context.Context, gameId int, price int) error
+}
+
+type CompanyRepo interface {
+	PostCompany(ctx context.Context, company *entities.Company) (int, error)
+	GetCompany(ctx context.Context, companyId int) (*entities.Company, error)
+	GetAllCompanies(ctx context.Context) ([]entities.Company, error)
+	DeleteCompany(ctx context.Context, companyId int) error
+}
+
 // type WalletRepo interface {
 // }
 
 type Repository struct {
 	// AuthorizationRepo
 	// CartRepo
-	// CompanyRepo
+	CompanyRepo
 	// DiscountRepo
-	// GameRepo
+	GameRepo
 	// GenreRepo
 	// OwnershipRepo
 	// ReviewRepo
@@ -66,6 +81,8 @@ type Repository struct {
 
 func New(db *sqlx.DB) *Repository {
 	return &Repository{
-		UserRepo: NewUserRepo(db),
+		UserRepo:    NewUserRepo(db),
+		GameRepo:    NewGameRepo(db),
+		CompanyRepo: NewCompanyRepo(db),
 	}
 }
