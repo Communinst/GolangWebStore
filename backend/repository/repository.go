@@ -23,8 +23,6 @@ const (
 	reviewsTable       = "reviews"
 )
 
-// type AuthorizationRepo interface {
-// }
 // type CartRepo interface {
 // }
 
@@ -45,6 +43,12 @@ type UserRepo interface {
 	GetAllUsers(ctx context.Context) ([]entities.User, error)
 	DeleteUser(ctx context.Context, userId int) error
 	PutUserRole(ctx context.Context, userId int, roleId int) error
+}
+
+type AuthRepo interface {
+	PostUser(ctx context.Context, user *entities.User) (int, error)
+	GetUser(ctx context.Context, userId int) (*entities.User, error)
+	GetUserByEmail(ctx context.Context, userEmail string) (*entities.User, error)
 }
 
 type GameRepo interface {

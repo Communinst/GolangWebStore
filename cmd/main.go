@@ -1,13 +1,12 @@
 package main
 
 import (
-	"context"
 	"log"
 	"log/slog"
 	"os"
 
 	cnfg "github.com/Communinst/GolangWebStore/backend/config"
-	entities "github.com/Communinst/GolangWebStore/backend/entity"
+	"github.com/Communinst/GolangWebStore/backend/handler"
 	"github.com/Communinst/GolangWebStore/backend/repository"
 	"github.com/Communinst/GolangWebStore/backend/service"
 	strg "github.com/Communinst/GolangWebStore/backend/storage"
@@ -47,28 +46,7 @@ func main() {
 
 	repository := repository.New(db)
 	service := service.New(repository)
-
-	repository.CompanyRepo.PostCompany(context.Background(), &entities.Company{
-		Name: "Slaveynia",
-	})
-	repository.CompanyRepo.PostCompany(context.Background(), &entities.Company{
-		Name: "Bastardsk",
-	})
-	repository.CompanyRepo.GetCompany(context.Background(), 2)
-	repository.CompanyRepo.GetAllCompanies(context.Background())
-
-	repository.GameRepo.PostGame(context.Background(), &entities.Game{
-		PublisherId: 1,
-		Name:        "Slaughtery",
-	})
-	repository.GameRepo.PostGame(context.Background(), &entities.Game{
-		PublisherId: 2,
-		Name:        "BadAssovsk",
-	})
-	repository.GameRepo.GetGame(context.Background(), 2)
-	repository.GameRepo.GetAllGames(context.Background())
-	repository.GameRepo.DeleteGame(context.Background(), 1)
-	repository.CompanyRepo.DeleteCompany(context.Background(), 1)
+	handler := handler.New(service)
 
 	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\drop.sql")
 	if err := strg.CloseDBConn(db); err != nil {
