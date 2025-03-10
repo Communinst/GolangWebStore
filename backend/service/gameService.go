@@ -48,3 +48,14 @@ func (service *GameService) PutGamePrice(ctx context.Context, gameId int, newPri
 	defer cancel()
 	return service.repo.PutGamePrice(c, gameId, newPrice)
 }
+func (service *GameService) GetGameByName(ctx context.Context, gameName string) (*entities.Game, error) {
+	c, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+	return service.repo.GetGameByName(c, gameName)
+}
+
+func (service *GameService) DeleteGameByName(ctx context.Context, gameName string) error {
+	c, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+	return service.repo.DeleteGameByName(c, gameName)
+}

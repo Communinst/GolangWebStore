@@ -5,4 +5,9 @@ VALUES
     ('Stuff', ' ', 1),
     ('Manager', ' ', 2),
     ('Chief', ' ', 3);
+
+INSERT INTO companies (name)
+VALUES
+    ('morons'),
+    ('faggots');
     

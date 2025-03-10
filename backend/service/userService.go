@@ -19,6 +19,7 @@ func NewUserService(repo repository.UserRepo) *UserService {
 }
 
 func (service *UserService) PostUser(ctx context.Context, user *entities.User) error {
+
 	c, cancel := context.WithTimeout(ctx, time.Second*10)
 	defer cancel()
 	_, err := service.repo.PostUser(c, user)
@@ -47,4 +48,16 @@ func (service *UserService) PutUserRole(ctx context.Context, userId int, roleId 
 	c, cancel := context.WithTimeout(ctx, time.Second*10)
 	defer cancel()
 	return service.repo.PutUserRole(c, userId, roleId)
+}
+
+func (service *CompanyService) GetCompanyByName(ctx context.Context, name string) (*entities.Company, error) {
+	c, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+	return service.repo.GetCompanyByName(c, name)
+}
+
+func (service *CompanyService) DeleteCompanyByName(ctx context.Context, name string) error {
+	c, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+	return service.repo.DeleteCompanyByName(c, name)
 }

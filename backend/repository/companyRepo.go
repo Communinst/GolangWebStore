@@ -159,3 +159,79 @@ func (repo *companyRepo) DeleteCompany(ctx context.Context, companyId int) error
 	log.Printf("Company by %d id was deleted", companyId)
 	return nil
 }
+
+func (repo *companyRepo) GetCompanyByName(ctx context.Context, name string) (*entities.Company, error) {
+	var resultCompany entities.Company
+
+	query := fmt.Sprintf(`SELECT * FROM %s WHERE name = $1`, companiesTable)
+
+	err := repo.db.GetContext(ctx, &resultCompany, query, name)
+	if err == nil {
+		log.Printf("Company by name %s was obtained", name)
+		return &resultCompany, err
+	}
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return &resultCompany, &customErrors.ErrorWithStatusCode{
+			HTTPStatus: http.StatusNotFound,
+			Msg:        fmt.Sprintf("Company with name %s wasn't found", name),
+		}
+	}
+
+	slog.Error("unknown error obtaining company by name")
+	return &resultCompany, &customErrors.ErrorWithStatusCode{
+		HTTPStatus: http.StatusInternalServerError,
+		Msg:        "unknown internal server error occurred",
+	}
+}
+
+func (repo *companyRepo) DeleteCompanyByName(ctx context.Context, name string) error {
+	tx, err := repo.db.BeginTx(ctx, nil)
+	if err != nil {
+		slog.Error("transaction initiation error")
+		return &customErrors.ErrorWithStatusCode{
+			HTTPStatus: http.StatusInternalServerError,
+			Msg:        "transaction initiation failed",
+		}
+	}
+
+	query := fmt.Sprintf(`DELETE FROM %s WHERE name = $1`, companiesTable)
+
+	result, err := tx.ExecContext(ctx, query, name)
+	if err != nil {
+		tx.Rollback()
+		slog.Error(fmt.Sprintf("error deleting company by name %s", name), "err", err.Error())
+		return &customErrors.ErrorWithStatusCode{
+			HTTPStatus: http.StatusInternalServerError,
+			Msg:        "failed to delete company",
+		}
+	}
+
+	affectedAmount, err := result.RowsAffected()
+	if err != nil {
+		tx.Rollback()
+		slog.Error("error getting amount of affected rows", "err", err.Error())
+		return &customErrors.ErrorWithStatusCode{
+			HTTPStatus: http.StatusInternalServerError,
+			Msg:        "failed to delete company",
+		}
+	}
+
+	if err = tx.Commit(); err != nil {
+		slog.Error("transaction fulfillment error")
+		return &customErrors.ErrorWithStatusCode{
+			HTTPStatus: http.StatusInternalServerError,
+			Msg:        "transaction fulfillment failed",
+		}
+	}
+
+	if affectedAmount == 0 {
+		return &customErrors.ErrorWithStatusCode{
+			HTTPStatus: http.StatusNotFound,
+			Msg:        fmt.Sprintf("Company with name %s wasn't found", name),
+		}
+	}
+
+	log.Printf("Company by name %s was deleted", name)
+	return nil
+}

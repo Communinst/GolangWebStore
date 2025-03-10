@@ -17,7 +17,8 @@ create table users
 );
 create table wallets
 (
-    user_id int primary key not null references users(user_id),
+    wallet_id serial primary key,
+    user_id int not null references users(user_id),
     balance bigint not null check (balance >= 0)
 );
 
@@ -43,7 +44,8 @@ create table games
     name varchar(63) not null unique,
     description text not null,
     price int not null check (price >= 0),
-    release_date timestamp not null
+    release_date timestamp not null,
+    rating decimal(4, 1) not null check (rating <= 100.0)
 );
 create table games_genres
 (
@@ -118,3 +120,42 @@ create table ownerships
     --     user_id int not null references users(user_id),
     --     game_id int not null references games(game_id)
     -- );
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION create_cart_for_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insert a new cart entry for the newly inserted user
+    INSERT INTO carts (user_id)
+    VALUES (NEW.user_id);
+
+    -- Insert a new wallet entry for the newly inserted user
+    INSERT INTO wallets (user_id, balance)
+    VALUES (NEW.user_id, 0);
+
+    -- Return the new row to indicate that the trigger succeeded
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_user_inserted
+AFTER INSERT ON users
+FOR EACH ROW
+EXECUTE FUNCTION create_cart_for_new_user();
+
+
+ALTER TABLE carts
+ADD CONSTRAINT fk_user
+FOREIGN KEY (user_id)
+REFERENCES users(user_id)
+ON DELETE CASCADE;
+
+ALTER TABLE wallets
+ADD CONSTRAINT fk_user_wallet
+FOREIGN KEY (user_id)
+REFERENCES users(user_id)
+ON DELETE CASCADE;

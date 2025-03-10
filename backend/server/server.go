@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -36,7 +37,7 @@ func New(address string, handler http.Handler,
 	}
 }
 
-func (s *Server) Run(timeOut time.Duration) {
+func (s *Server) Run() {
 	slog.Info("Server is running at", "address", s.httpServer.Addr)
 	// if
 	shutdownChan := make(chan bool, 1)
@@ -51,10 +52,10 @@ func (s *Server) Run(timeOut time.Duration) {
 	}()
 
 	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	<-sigChan
 
-	shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), timeOut)
+	shutdownCtx, shutdownRelease := context.WithTimeout(context.Background(), s.httpServer.ReadTimeout)
 	defer shutdownRelease()
 
 	if err := s.Shutdown(shutdownCtx); err != nil {

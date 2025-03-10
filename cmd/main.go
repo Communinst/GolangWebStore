@@ -8,6 +8,7 @@ import (
 	cnfg "github.com/Communinst/GolangWebStore/backend/config"
 	"github.com/Communinst/GolangWebStore/backend/handler"
 	"github.com/Communinst/GolangWebStore/backend/repository"
+	"github.com/Communinst/GolangWebStore/backend/server"
 	"github.com/Communinst/GolangWebStore/backend/service"
 	strg "github.com/Communinst/GolangWebStore/backend/storage"
 	"github.com/joho/godotenv"
@@ -32,7 +33,7 @@ func InitEnv() error {
 }
 
 func main() {
-
+	//gin.SetMode(gin.ReleaseMode)
 	if err := InitEnv(); err != nil {
 		slog.Error(err.Error())
 		os.Exit(1)
@@ -48,12 +49,20 @@ func main() {
 	service := service.New(repository)
 	handler := handler.New(service)
 
-	handler
+	server := server.New(
+		config.Address,
+		handler.InitRoutes(),
+		config.Timeout,
+		config.Timeout,
+	)
+
+	server.Run()
 
 	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\drop.sql")
 	if err := strg.CloseDBConn(db); err != nil {
 		log.Fatal("Failed to cease DB connection!")
 	} else {
-		log.Print("Successfully ceased DB connection!")
+		//log.Print("Successfully ceased DB connection!")
 	}
+
 }

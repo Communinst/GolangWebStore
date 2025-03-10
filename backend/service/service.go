@@ -49,13 +49,23 @@ type CompanyServiceInterface interface {
 	GetCompany(ctx context.Context, companyId int) (*entities.Company, error)
 	GetAllCompanies(ctx context.Context) ([]entities.Company, error)
 	DeleteCompany(ctx context.Context, companyId int) error
+	GetCompanyByName(ctx context.Context, name string) (*entities.Company, error)
+	DeleteCompanyByName(ctx context.Context, name string) error
 }
 type GameServiceInterface interface {
 	PostGame(ctx context.Context, game *entities.Game) error
 	GetGame(ctx context.Context, gameId int) (*entities.Game, error)
+	GetGameByName(ctx context.Context, gameName string) (*entities.Game, error) // New method
 	GetAllGames(ctx context.Context) ([]entities.Game, error)
 	DeleteGame(ctx context.Context, gameId int) error
+	DeleteGameByName(ctx context.Context, gameName string) error // New method
 	PutGamePrice(ctx context.Context, gameId int, newPrice int) error
+}
+
+type CartServiceInterface interface {
+	AddGameToCart(ctx context.Context, userId int, gameId int) error
+	GetCartByUserID(ctx context.Context, userId int) ([]entities.Game, error)
+	RemoveGameFromCart(ctx context.Context, userId int, gameId int) error
 }
 
 type Service struct {
@@ -70,6 +80,8 @@ type Service struct {
 	// Wallet
 	CompanyServiceInterface
 	GameServiceInterface
+
+	CartServiceInterface
 }
 
 func New(repo *repository.Repository) *Service {
@@ -78,5 +90,6 @@ func New(repo *repository.Repository) *Service {
 		AuthServiceInterface:    NewAuthService(repo.AuthRepo),
 		CompanyServiceInterface: NewCompanyService(repo.CompanyRepo),
 		GameServiceInterface:    NewGameService(repo.GameRepo),
+		CartServiceInterface:    NewCartService(repo.CartRepo),
 	}
 }

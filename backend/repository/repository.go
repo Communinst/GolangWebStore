@@ -44,19 +44,10 @@ type UserRepo interface {
 	DeleteUser(ctx context.Context, userId int) error
 	PutUserRole(ctx context.Context, userId int, roleId int) error
 }
-
 type AuthRepo interface {
 	PostUser(ctx context.Context, user *entities.User) (int, error)
 	GetUser(ctx context.Context, userId int) (*entities.User, error)
 	GetUserByEmail(ctx context.Context, userEmail string) (*entities.User, error)
-}
-
-type GameRepo interface {
-	PostGame(ctx context.Context, game *entities.Game) (int, error)
-	GetGame(ctx context.Context, gameId int) (*entities.Game, error)
-	GetAllGames(ctx context.Context) ([]entities.Game, error)
-	DeleteGame(ctx context.Context, gameId int) error
-	PutGamePrice(ctx context.Context, gameId int, price int) error
 }
 
 type CompanyRepo interface {
@@ -64,23 +55,43 @@ type CompanyRepo interface {
 	GetCompany(ctx context.Context, companyId int) (*entities.Company, error)
 	GetAllCompanies(ctx context.Context) ([]entities.Company, error)
 	DeleteCompany(ctx context.Context, companyId int) error
+	GetCompanyByName(ctx context.Context, name string) (*entities.Company, error)
+	DeleteCompanyByName(ctx context.Context, name string) error
+}
+type GameRepo interface {
+	PostGame(ctx context.Context, game *entities.Game) (int, error)
+	GetGame(ctx context.Context, gameId int) (*entities.Game, error)
+	GetGameByName(ctx context.Context, gameName string) (*entities.Game, error) // New method
+	GetAllGames(ctx context.Context) ([]entities.Game, error)
+	DeleteGame(ctx context.Context, gameId int) error
+	DeleteGameByName(ctx context.Context, gameName string) error // New method
+	PutGamePrice(ctx context.Context, gameId int, price int) error
+}
+
+type CartRepo interface {
+	AddGameToCart(ctx context.Context, userId int, gameId int) error
+	GetCartByUserID(ctx context.Context, userId int) ([]entities.Game, error)
+	RemoveGameFromCart(ctx context.Context, userId int, gameId int) error
 }
 
 // type WalletRepo interface {
 // }
 
 type Repository struct {
-	AuthRepo
+
 	// CartRepo
-	CompanyRepo
-	// DiscountRepo
-	GameRepo
+
 	// GenreRepo
 	// OwnershipRepo
 	// ReviewRepo
 	// RoleRepo
 	UserRepo
+	AuthRepo
 	// WalletRepo
+	CompanyRepo
+	// DiscountRepo
+	GameRepo
+	CartRepo
 }
 
 func New(db *sqlx.DB) *Repository {
@@ -89,5 +100,6 @@ func New(db *sqlx.DB) *Repository {
 		AuthRepo:    NewAuthRepo(db),
 		GameRepo:    NewGameRepo(db),
 		CompanyRepo: NewCompanyRepo(db),
+		CartRepo:    NewCartRepo(db),
 	}
 }

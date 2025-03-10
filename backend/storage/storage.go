@@ -68,7 +68,7 @@ func RunDBTableScript(db *sqlx.DB, scriptPath string) error {
 		}
 	}
 
-	log.Print("Script down the path:", scriptPath, ": succesfull run")
+	//log.Print("Script down the path:", scriptPath, ": succesfull run")
 	return nil
 }
 
