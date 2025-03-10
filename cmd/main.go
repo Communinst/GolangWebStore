@@ -48,6 +48,8 @@ func main() {
 	service := service.New(repository)
 	handler := handler.New(service)
 
+	handler
+
 	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\drop.sql")
 	if err := strg.CloseDBConn(db); err != nil {
 		log.Fatal("Failed to cease DB connection!")

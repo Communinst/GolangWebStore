@@ -70,7 +70,7 @@ type CompanyRepo interface {
 // }
 
 type Repository struct {
-	// AuthorizationRepo
+	AuthRepo
 	// CartRepo
 	CompanyRepo
 	// DiscountRepo
@@ -86,6 +86,7 @@ type Repository struct {
 func New(db *sqlx.DB) *Repository {
 	return &Repository{
 		UserRepo:    NewUserRepo(db),
+		AuthRepo:    NewAuthRepo(db),
 		GameRepo:    NewGameRepo(db),
 		CompanyRepo: NewCompanyRepo(db),
 	}

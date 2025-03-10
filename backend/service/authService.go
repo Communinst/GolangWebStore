@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	authToken "github.com/Communinst/GolangWebStore/backend/JSONWebTokens"
 	entities "github.com/Communinst/GolangWebStore/backend/entity"
 	"github.com/Communinst/GolangWebStore/backend/repository"
 	"github.com/golang-jwt/jwt/v4"
@@ -21,7 +22,7 @@ func NewAuthService(repo repository.AuthRepo) *AuthService {
 }
 
 func (service *AuthService) GenerateAuthToken(user *entities.User, secret string, expireTime int) (string, error) {
-	claims := &JWTToken{
+	claims := &authToken.JWTToken{
 		Email: user.Email,
 		Id:    strconv.Itoa(user.UserId),
 		RegisteredClaims: jwt.RegisteredClaims{

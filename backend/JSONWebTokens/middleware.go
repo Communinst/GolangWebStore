@@ -5,11 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
-	"time"
 
-	entities "github.com/Communinst/GolangWebStore/backend/entity"
 	"github.com/golang-jwt/jwt/v4"
 )
 
