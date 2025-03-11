@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -45,7 +46,7 @@ func (h *Handler) getGenreByName(c *gin.Context) {
 func (h *Handler) getAllGenres(c *gin.Context) {
 	genres, err := h.service.GenreServiceInterface.GetAllGenres(c.Request.Context())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve genres"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -69,6 +70,7 @@ func (h *Handler) deleteGenre(c *gin.Context) {
 
 func (h *Handler) getGenreByID(c *gin.Context) {
 	genreId, err := strconv.Atoi(c.Param("genre_id"))
+	log.Printf("GenreID: %d", genreId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid genre ID"})
 		return

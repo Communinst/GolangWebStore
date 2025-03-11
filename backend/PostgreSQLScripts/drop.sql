@@ -13,3 +13,4 @@ drop table companies;
 drop table wallets;
 drop table users;
 drop table roles;
+drop table dumps;

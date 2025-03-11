@@ -15,6 +15,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const (
+	adminRole = 6
+)
+
 func setupConfig() *cnfg.Config {
 	config, err := cnfg.LoadConfig()
 	if err != nil {

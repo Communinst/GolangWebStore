@@ -9,3 +9,6 @@ type Discount struct {
 	StartDate     time.Time `json:"start_date" db:"start_date"`
 	CeaseDate     time.Time `json:"cease_date" db:"cease_date"`
 }
+
+
+

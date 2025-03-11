@@ -63,6 +63,15 @@ type GenreServiceInterface interface {
 	DeleteGenre(ctx context.Context, genreId int) error
 }
 
+type GameGenreServiceInterface interface {
+	AddGenreToGame(ctx context.Context, gameId int, genreId int) error
+	GetGenresByGameID(ctx context.Context, gameId int) ([]entities.Genre, error)
+	GetGamesByGenreID(ctx context.Context, genreId int) ([]entities.Game, error)
+	GetGamesByGenreName(ctx context.Context, genreName string) ([]entities.Game, error)
+	IncrementGenreCount(ctx context.Context, gameId int, genreId int) error
+	DeleteGameGenre(ctx context.Context, gameId int, genreId int) error
+}
+
 type CartServiceInterface interface {
 	AddGameToCart(ctx context.Context, userId int, gameId int) error
 	GetCartByUserID(ctx context.Context, userId int) ([]entities.Game, error)
@@ -88,6 +97,11 @@ type ReviewServiceInterface interface {
 	DeleteReview(ctx context.Context, reviewId int) error
 }
 
+type DumpServiceInterface interface {
+	InsertDump(ctx context.Context, filePath string) error
+	GetAllDumps(ctx context.Context) ([]entities.Dump, error)
+}
+
 type Service struct {
 	UserServiceInterface
 	AuthServiceInterface
@@ -96,12 +110,14 @@ type Service struct {
 	CompanyServiceInterface
 	GameServiceInterface
 	GenreServiceInterface
+	GameGenreServiceInterface
 
 	CartServiceInterface
 	OwnershipServiceInterface
 	DiscountServiceInterface
 
 	ReviewServiceInterface
+	DumpServiceInterface
 }
 
 func New(repo *repository.Repository) *Service {
@@ -112,9 +128,11 @@ func New(repo *repository.Repository) *Service {
 		CompanyServiceInterface:   NewCompanyService(repo.CompanyRepo),
 		GameServiceInterface:      NewGameService(repo.GameRepo),
 		GenreServiceInterface:     NewGenreService(repo.GenreRepo),
+		GameGenreServiceInterface: NewGameGenreService(repo.GameGenreRepo),
 		CartServiceInterface:      NewCartService(repo.CartRepo),
 		OwnershipServiceInterface: NewOwnershipService(repo.OwnershipRepo),
 		DiscountServiceInterface:  NewDiscountService(repo.DiscountRepo),
 		ReviewServiceInterface:    NewReviewService(repo.ReviewRepo),
+		DumpServiceInterface:      NewDumpService(repo.DumpRepo),
 	}
 }

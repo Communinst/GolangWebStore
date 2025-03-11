@@ -95,6 +95,7 @@ func (repo *authRepo) GetUserByEmail(ctx context.Context, userEmail string) (*en
 
 	query := fmt.Sprintf(`SELECT * FROM %s WHERE email = $1`, usersTable)
 
+	fmt.Printf("%s", userEmail)
 	err := repo.db.GetContext(ctx, &resultUser, query, userEmail)
 	if err == nil {
 		log.Printf("User by %s email was obtained", userEmail)

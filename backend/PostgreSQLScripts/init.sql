@@ -57,7 +57,7 @@ CREATE TABLE games_genres (
     game_genre_id SERIAL PRIMARY KEY,
     game_id INT NOT NULL REFERENCES games(game_id),
     genre_id INT NOT NULL REFERENCES genres(genre_id),
-    count INT DEFAULT 1,
+    count INT DEFAULT 0,
     UNIQUE (game_id, genre_id)
 );
 create table games_developed_by
@@ -127,24 +127,33 @@ create table ownerships
     --     user_id int not null references users(user_id),
     --     game_id int not null references games(game_id)
     -- );
-
-
-
+CREATE TABLE dumps (
+    id SERIAL PRIMARY KEY,
+    filename VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    size BIGINT
+);
 
 
 
 CREATE OR REPLACE FUNCTION create_cart_for_new_user()
 RETURNS TRIGGER AS $$
+DECLARE 
+    user_role TEXT;
 BEGIN
-    -- Insert a new cart entry for the newly inserted user
-    INSERT INTO carts (user_id)
-    VALUES (NEW.user_id);
+    SELECT name INTO user_role
+    FROM roles  
+    WHERE role_id = NEW.role_id;
+    IF user_role = 'User' THEN
+        -- Insert a new cart entry for the newly inserted user
+        INSERT INTO carts (user_id)
+        VALUES (NEW.user_id);
 
-    -- Insert a new wallet entry for the newly inserted user
-    INSERT INTO wallets (user_id, balance)
-    VALUES (NEW.user_id, 0);
-
-    -- Return the new row to indicate that the trigger succeeded
+        -- Insert a new wallet entry for the newly inserted user
+        INSERT INTO wallets (user_id, balance)
+        VALUES (NEW.user_id, 0);
+    END IF;
+        -- Return the new row to indicate that the trigger succeeded
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -166,3 +175,48 @@ ADD CONSTRAINT fk_user_wallet
 FOREIGN KEY (user_id)
 REFERENCES users(user_id)
 ON DELETE CASCADE;
+
+
+
+CREATE OR REPLACE FUNCTION check_if_valid_count()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Check if the new count value is negative
+    IF NEW.count < 0 THEN
+        NEW.count := 0;
+    END IF;
+    RETURN NEW;
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_update_games_genres
+AFTER UPDATE ON games_genres
+FOR EACH ROW
+EXECUTE FUNCTION check_if_valid_count();
+
+
+
+
+CREATE OR REPLACE FUNCTION insert_dump(p_filePath VARCHAR)
+    RETURNS VOID AS
+$$
+BEGIN
+    INSERT INTO dumps (filePath)
+    VALUES (p_filePath)
+    ON CONFLICT (filePath) DO NOTHING;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION get_all_dumps()
+    RETURNS TABLE
+            (
+                filePath VARCHAR
+            )
+AS
+$$
+BEGIN
+    RETURN QUERY SELECT dumps.filePath FROM dumps;
+END;
+$$ LANGUAGE plpgsql;

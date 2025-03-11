@@ -7,37 +7,50 @@ import (
 	"os"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func JwtAuthMiddleware() func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			secret := os.Getenv("AUTHORIZATION_TOKEN_SECRET")
-			if secret == "" {
-				http.Error(w, "error", http.StatusInternalServerError)
+func JwtAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		secret := os.Getenv("AUTHORIZATION_TOKEN_SECRET")
+		if secret == "" {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Authorization token secret not set"})
+			c.Abort()
+			return
+		}
+
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
+			c.Abort()
+			return
+		}
+
+		tokenString := strings.Replace(authHeader, "Bearer ", "", 1)
+		authorized, err := IsAuthorized(tokenString, secret)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			c.Abort()
+			return
+		}
+
+		if authorized {
+			userID, err := ExtractIDFromToken(tokenString, secret)
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+				c.Abort()
 				return
 			}
-			authHeader := r.Header.Get("Authorization")
-			t := strings.Split(authHeader, " ")
-			if len(t) == 2 {
-				authToken := t[1]
-				authorized, err := IsAuthorized(authToken, secret)
-				if authorized {
-					userID, err := ExtractIDFromToken(authToken, secret)
-					if err != nil {
-						http.Error(w, err.Error(), http.StatusUnauthorized)
-						return
-					}
-					ctx := context.WithValue(r.Context(), "user-id", userID)
-					next.ServeHTTP(w, r.WithContext(ctx))
-					return
-				}
-				http.Error(w, err.Error(), http.StatusUnauthorized)
-				return
-			}
-			http.Error(w, "Not authorized", http.StatusUnauthorized)
-		})
+
+			// Set user ID in context
+			ctx := context.WithValue(c.Request.Context(), "user-id", userID)
+			c.Request = c.Request.WithContext(ctx)
+			c.Next()
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.Abort()
+		}
 	}
 }
 

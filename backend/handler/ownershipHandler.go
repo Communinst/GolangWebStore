@@ -21,6 +21,22 @@ func (h *Handler) addOwnership(c *gin.Context) {
 		return
 	}
 
+	wallet, err := h.service.GetWalletByUserID(c.Request.Context(), userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to add ownership"})
+		return
+	}
+	game, err := h.service.GetGame(c.Request.Context(), gameId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add ownership"})
+		return
+	}
+
+	if game.Price > wallet.Balance {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add ownership. Not enough balance"})
+		return
+	}
+
 	var request struct {
 		MinutesSpent int64     `json:"minutes_spent"`
 		ReceiptDate  time.Time `json:"receipt_date"`
@@ -35,7 +51,7 @@ func (h *Handler) addOwnership(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add ownership"})
 		return
 	}
-
+	h.service.UpdateWalletBalance(c.Request.Context(), userId, int64(wallet.Balance)-int64(game.Price))
 	c.JSON(http.StatusOK, gin.H{"message": "Ownership added successfully"})
 }
 

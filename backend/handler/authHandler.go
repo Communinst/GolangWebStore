@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -36,8 +37,19 @@ func (h *Handler) signUp(c *gin.Context) {
 	user.Password = string(hashedPassword)
 	user.SignUpDate = time.Now()
 
-	roleId, _ := strconv.ParseInt(os.Getenv("DEFAULT_USER_ROLE_ID"), 10, 64)
-	user.RoleId = int(roleId)
+	userCount, err := h.service.UserServiceInterface.GetAllUsers(c.Request.Context())
+	if err != nil {
+		if err.Error() != "no user found" {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check user count"})
+			return
+		}
+	}
+
+	// Only proceed with sign-up if there are no existing users
+	if len(userCount) > 0 {
+		roleId, _ := strconv.ParseInt(os.Getenv("DEFAULT_USER_ROLE_ID"), 10, 64)
+		user.RoleId = int(roleId)
+	}
 
 	// Call the service layer to create the user
 	if err := h.service.AuthServiceInterface.PostUser(c.Request.Context(), &user); err != nil {
@@ -72,7 +84,9 @@ func (h *Handler) signIn(c *gin.Context) {
 	}
 
 	// Verify the password
+
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password)); err != nil {
+		fmt.Printf("%s\n", err.Error())
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
 	}
@@ -92,5 +106,15 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": userToken})
+	fmt.Printf("%s\n", user.Password)
+	defaultAdmin, _ := strconv.ParseInt(os.Getenv("DEFAULT_ADMIN_ROLE_ID"), 10, 64)
+	if user.RoleId == int(defaultAdmin) {
+		//c.Redirect(http.StatusOK, "/admin")
+		c.JSON(http.StatusOK, gin.H{"message": "Hello, admin", "token": userToken, "redirect": "/admin/"})
+	} else {
+		//c.Redirect(http.StatusOK, "/api")
+		c.JSON(http.StatusOK, gin.H{"message": "Hello, user", "token": userToken, "redirect": "/api"})
+	}
+
+	//c.JSON(http.StatusOK, gin.H{"token": userToken})
 }

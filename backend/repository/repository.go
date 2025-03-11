@@ -9,19 +9,21 @@ import (
 )
 
 const (
-	usersTable         = "users"
-	gamesTable         = "games"
-	companiesTable     = "companies"
-	rolesTable         = "roles"
-	storesTable        = "stores"
-	categoriesTable    = "categories"
-	manufacturersTable = "manufacturers"
-	instrumentsTable   = "instruments"
-	rentalsTable       = "rentals"
-	paymentsTable      = "payments"
-	repairsTable       = "repairs"
-	discountsTable     = "repairs"
-	reviewsTable       = "reviews"
+	rolesTable   = "roles"
+	usersTable   = "users"
+	walletsTable = "wallets"
+
+	companiesTable   = "companies"
+	genresTable      = "genres"
+	gamesTable       = "games"
+	gamesGenresTable = "games_genres"
+
+	cartsTable     = "carts"
+	cartGamesTable = "cart_games"
+	ownershipTable = "ownerships"
+
+	discountsTable = "discountst"
+	reviewsTable   = "reviews"
 )
 
 // type CartRepo interface {
@@ -75,6 +77,14 @@ type GenreRepo interface {
 	GetAllGenres(ctx context.Context) ([]entities.Genre, error)
 	DeleteGenre(ctx context.Context, genreId int) error
 }
+type GameGenreRepo interface {
+	AddGenreToGame(ctx context.Context, gameId int, genreId int) error
+	GetGenresByGameID(ctx context.Context, gameId int) ([]entities.Genre, error)
+	GetGamesByGenreID(ctx context.Context, genreId int) ([]entities.Game, error)
+	GetGamesByGenreName(ctx context.Context, genreName string) ([]entities.Game, error)
+	IncrementGenreCount(ctx context.Context, gameId int, genreId int) error
+	DeleteGameGenre(ctx context.Context, gameId int, genreId int) error
+}
 
 type CartRepo interface {
 	AddGameToCart(ctx context.Context, userId int, gameId int) error
@@ -100,21 +110,25 @@ type ReviewRepo interface {
 	DeleteReview(ctx context.Context, reviewId int) error
 }
 
-// type WalletRepo interface {
-// }
+type DumpRepo interface {
+	InsertDump(ctx context.Context, dump *entities.Dump) error
+	GetAllDumps(ctx context.Context) ([]entities.Dump, error)
+}
 
 type Repository struct {
-	GenreRepo
 	// RoleRepo
 	UserRepo
 	AuthRepo
 	WalletRepo
 	CompanyRepo
 	GameRepo
+	GenreRepo
+	GameGenreRepo
 	CartRepo
 	OwnershipRepo
 	DiscountRepo
 	ReviewRepo
+	DumpRepo
 }
 
 func New(db *sqlx.DB) *Repository {
@@ -124,10 +138,12 @@ func New(db *sqlx.DB) *Repository {
 		WalletRepo:    NewWalletRepo(db),
 		GameRepo:      NewGameRepo(db),
 		GenreRepo:     NewGenreRepo(db),
+		GameGenreRepo: NewGameGenreRepo(db),
 		CompanyRepo:   NewCompanyRepo(db),
 		CartRepo:      NewCartRepo(db),
 		OwnershipRepo: NewOwnershipRepo(db),
 		DiscountRepo:  NewDiscountRepo(db),
 		ReviewRepo:    NewReviewRepo(db),
+		DumpRepo:      NewDumpRepo(db),
 	}
 }

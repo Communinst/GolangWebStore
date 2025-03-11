@@ -4,7 +4,8 @@ VALUES
     ('User', ' ', 0),
     ('Stuff', ' ', 1),
     ('Manager', ' ', 2),
-    ('Chief', ' ', 3);
+    ('Chief', ' ', 3),
+    ('Admin', ' ', 4);
 
 INSERT INTO companies (name)
 VALUES

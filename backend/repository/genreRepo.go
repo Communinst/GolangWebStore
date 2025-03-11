@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
@@ -83,20 +84,27 @@ func (repo *genreRepo) GetGenreByName(ctx context.Context, name string) (*entiti
 
 func (repo *genreRepo) GetAllGenres(ctx context.Context) ([]entities.Genre, error) {
 	var genres []entities.Genre
-
-	query := `SELECT * FROM genres`
+	log.Print("In here")
+	query := fmt.Sprintf(`SELECT * FROM %s`, genresTable)
 
 	err := repo.db.SelectContext(ctx, &genres, query)
-	if err != nil {
-		slog.Error("error retrieving all genres")
-		return nil, &customErrors.ErrorWithStatusCode{
+	if err == nil {
+		log.Print("Users were obtained")
+		return genres, err
+	}
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return genres, &customErrors.ErrorWithStatusCode{
 			HTTPStatus: http.StatusInternalServerError,
-			Msg:        "failed to retrieve genres",
+			Msg:        "no genre found",
 		}
 	}
 
-	log.Println("All genres retrieved")
-	return genres, nil
+	slog.Error("unknown error obtaining genres")
+	return genres, &customErrors.ErrorWithStatusCode{
+		HTTPStatus: http.StatusInternalServerError,
+		Msg:        "unknown interanal server error occured",
+	}
 }
 
 func (repo *genreRepo) DeleteGenre(ctx context.Context, genreId int) error {
