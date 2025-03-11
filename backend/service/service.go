@@ -9,23 +9,15 @@ package service
 
 import (
 	"context"
+	"time"
 
 	entities "github.com/Communinst/GolangWebStore/backend/entity"
 	"github.com/Communinst/GolangWebStore/backend/repository"
 )
 
-type Cart interface {
-}
-
-type Discount interface {
-}
-
 type Genre interface {
 }
-type Ownership interface {
-}
-type Review interface {
-}
+
 type Role interface {
 }
 type UserServiceInterface interface {
@@ -41,7 +33,9 @@ type AuthServiceInterface interface {
 	GetUser(ctx context.Context, userId int) (*entities.User, error)
 	GetUserByEmail(ctx context.Context, userEmail string) (*entities.User, error)
 }
-type Wallet interface {
+type WalletServiceInterface interface {
+	GetWalletByUserID(ctx context.Context, userId int) (*entities.Wallet, error)
+	UpdateWalletBalance(ctx context.Context, userId int, amount int64) error
 }
 
 type CompanyServiceInterface interface {
@@ -61,6 +55,13 @@ type GameServiceInterface interface {
 	DeleteGameByName(ctx context.Context, gameName string) error // New method
 	PutGamePrice(ctx context.Context, gameId int, newPrice int) error
 }
+type GenreServiceInterface interface {
+	AddGenre(ctx context.Context, name string, description string) error
+	GetGenreByName(ctx context.Context, name string) (*entities.Genre, error)
+	GetGenreByID(ctx context.Context, genreId int) (*entities.Genre, error)
+	GetAllGenres(ctx context.Context) ([]entities.Genre, error)
+	DeleteGenre(ctx context.Context, genreId int) error
+}
 
 type CartServiceInterface interface {
 	AddGameToCart(ctx context.Context, userId int, gameId int) error
@@ -68,28 +69,52 @@ type CartServiceInterface interface {
 	RemoveGameFromCart(ctx context.Context, userId int, gameId int) error
 }
 
+type OwnershipServiceInterface interface {
+	AddOwnership(ctx context.Context, userId int, gameId int, minutesSpent int64, receiptDate time.Time) error
+	GetOwnershipsByUserID(ctx context.Context, userId int) ([]entities.Ownership, error)
+	GetOwnershipsByGameID(ctx context.Context, gameId int) ([]entities.Ownership, error)
+	DeleteOwnership(ctx context.Context, ownershipId int) error
+}
+type DiscountServiceInterface interface {
+	AddDiscount(ctx context.Context, gameId int, discountValue int, startDate time.Time, ceaseDate time.Time) error
+	GetDiscountsByGameID(ctx context.Context, gameId int) ([]entities.Discount, error)
+	DeleteDiscount(ctx context.Context, discountId int) error
+}
+
+type ReviewServiceInterface interface {
+	AddReview(ctx context.Context, userId int, gameId int, recommended bool, message string, date time.Time) error
+	GetReviewsByGameID(ctx context.Context, gameId int) ([]entities.Review, error)
+	GetReviewsByUserID(ctx context.Context, userId int) ([]entities.Review, error)
+	DeleteReview(ctx context.Context, reviewId int) error
+}
+
 type Service struct {
-	// Cart
-	// Discount
-	// Genre
-	// Ownership
-	// Review
-	// Role
 	UserServiceInterface
 	AuthServiceInterface
-	// Wallet
+	WalletServiceInterface
+
 	CompanyServiceInterface
 	GameServiceInterface
+	GenreServiceInterface
 
 	CartServiceInterface
+	OwnershipServiceInterface
+	DiscountServiceInterface
+
+	ReviewServiceInterface
 }
 
 func New(repo *repository.Repository) *Service {
 	return &Service{
-		UserServiceInterface:    NewUserService(repo.UserRepo),
-		AuthServiceInterface:    NewAuthService(repo.AuthRepo),
-		CompanyServiceInterface: NewCompanyService(repo.CompanyRepo),
-		GameServiceInterface:    NewGameService(repo.GameRepo),
-		CartServiceInterface:    NewCartService(repo.CartRepo),
+		UserServiceInterface:      NewUserService(repo.UserRepo),
+		AuthServiceInterface:      NewAuthService(repo.AuthRepo),
+		WalletServiceInterface:    NewWalletService(repo.WalletRepo),
+		CompanyServiceInterface:   NewCompanyService(repo.CompanyRepo),
+		GameServiceInterface:      NewGameService(repo.GameRepo),
+		GenreServiceInterface:     NewGenreService(repo.GenreRepo),
+		CartServiceInterface:      NewCartService(repo.CartRepo),
+		OwnershipServiceInterface: NewOwnershipService(repo.OwnershipRepo),
+		DiscountServiceInterface:  NewDiscountService(repo.DiscountRepo),
+		ReviewServiceInterface:    NewReviewService(repo.ReviewRepo),
 	}
 }

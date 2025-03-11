@@ -47,11 +47,18 @@ create table games
     release_date timestamp not null,
     rating decimal(4, 1) not null check (rating <= 100.0)
 );
-create table games_genres
-(
-    game_genre_id serial primary key,
-    game_id int not null references games(game_id),
-    genre_id int not null references genres(genre_id)
+-- create table games_genres
+-- (
+--     game_genre_id serial primary key,
+--     game_id int not null references games(game_id),
+--     genre_id int not null references genres(genre_id)
+-- );
+CREATE TABLE games_genres (
+    game_genre_id SERIAL PRIMARY KEY,
+    game_id INT NOT NULL REFERENCES games(game_id),
+    genre_id INT NOT NULL REFERENCES genres(genre_id),
+    count INT DEFAULT 1,
+    UNIQUE (game_id, genre_id)
 );
 create table games_developed_by
 (

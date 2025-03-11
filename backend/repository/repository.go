@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	entities "github.com/Communinst/GolangWebStore/backend/entity"
 	"github.com/jmoiron/sqlx"
@@ -26,13 +27,9 @@ const (
 // type CartRepo interface {
 // }
 
-// type DiscountRepo interface {
-// }
-
 // type GenreRepo interface {
 // }
-// type OwnershipRepo interface {
-// }
+
 // type ReviewRepo interface {
 // }
 // type RoleRepo interface {
@@ -48,6 +45,10 @@ type AuthRepo interface {
 	PostUser(ctx context.Context, user *entities.User) (int, error)
 	GetUser(ctx context.Context, userId int) (*entities.User, error)
 	GetUserByEmail(ctx context.Context, userEmail string) (*entities.User, error)
+}
+type WalletRepo interface {
+	GetWalletByUserID(ctx context.Context, userId int) (*entities.Wallet, error)
+	UpdateWalletBalance(ctx context.Context, userId int, amount int64) error
 }
 
 type CompanyRepo interface {
@@ -67,39 +68,66 @@ type GameRepo interface {
 	DeleteGameByName(ctx context.Context, gameName string) error // New method
 	PutGamePrice(ctx context.Context, gameId int, price int) error
 }
+type GenreRepo interface {
+	AddGenre(ctx context.Context, name string, description string) error
+	GetGenreByName(ctx context.Context, name string) (*entities.Genre, error)
+	GetGenreByID(ctx context.Context, genreId int) (*entities.Genre, error)
+	GetAllGenres(ctx context.Context) ([]entities.Genre, error)
+	DeleteGenre(ctx context.Context, genreId int) error
+}
 
 type CartRepo interface {
 	AddGameToCart(ctx context.Context, userId int, gameId int) error
 	GetCartByUserID(ctx context.Context, userId int) ([]entities.Game, error)
 	RemoveGameFromCart(ctx context.Context, userId int, gameId int) error
 }
+type OwnershipRepo interface {
+	AddOwnership(ctx context.Context, userId int, gameId int, minutesSpent int64, receiptDate time.Time) error
+	GetOwnershipsByUserID(ctx context.Context, userId int) ([]entities.Ownership, error)
+	GetOwnershipsByGameID(ctx context.Context, gameId int) ([]entities.Ownership, error)
+	DeleteOwnership(ctx context.Context, ownershipId int) error
+}
+type DiscountRepo interface {
+	AddDiscount(ctx context.Context, gameId int, discountValue int, startDate time.Time, ceaseDate time.Time) error
+	GetDiscountsByGameID(ctx context.Context, gameId int) ([]entities.Discount, error)
+	DeleteDiscount(ctx context.Context, discountId int) error
+}
+
+type ReviewRepo interface {
+	AddReview(ctx context.Context, userId int, gameId int, recommended bool, message string, date time.Time) error
+	GetReviewsByGameID(ctx context.Context, gameId int) ([]entities.Review, error)
+	GetReviewsByUserID(ctx context.Context, userId int) ([]entities.Review, error)
+	DeleteReview(ctx context.Context, reviewId int) error
+}
 
 // type WalletRepo interface {
 // }
 
 type Repository struct {
-
-	// CartRepo
-
-	// GenreRepo
-	// OwnershipRepo
-	// ReviewRepo
+	GenreRepo
 	// RoleRepo
 	UserRepo
 	AuthRepo
-	// WalletRepo
+	WalletRepo
 	CompanyRepo
-	// DiscountRepo
 	GameRepo
 	CartRepo
+	OwnershipRepo
+	DiscountRepo
+	ReviewRepo
 }
 
 func New(db *sqlx.DB) *Repository {
 	return &Repository{
-		UserRepo:    NewUserRepo(db),
-		AuthRepo:    NewAuthRepo(db),
-		GameRepo:    NewGameRepo(db),
-		CompanyRepo: NewCompanyRepo(db),
-		CartRepo:    NewCartRepo(db),
+		UserRepo:      NewUserRepo(db),
+		AuthRepo:      NewAuthRepo(db),
+		WalletRepo:    NewWalletRepo(db),
+		GameRepo:      NewGameRepo(db),
+		GenreRepo:     NewGenreRepo(db),
+		CompanyRepo:   NewCompanyRepo(db),
+		CartRepo:      NewCartRepo(db),
+		OwnershipRepo: NewOwnershipRepo(db),
+		DiscountRepo:  NewDiscountRepo(db),
+		ReviewRepo:    NewReviewRepo(db),
 	}
 }
