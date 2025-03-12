@@ -48,7 +48,6 @@ func (repo *authRepo) PostUser(ctx context.Context, user *entities.User) (int, e
 		user.RoleId).Scan(&result_id)
 
 	if err != nil {
-		log.Fatalf("%v", err)
 		tx.Rollback()
 		return -1, err
 	}

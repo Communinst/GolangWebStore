@@ -17,7 +17,7 @@ type Config struct {
 
 type HttpServer struct {
 	Address string        `yaml:"address" env-default:"localhost:8080"`
-	Timeout time.Duration `yaml:"timeout" env-default:"5s"`
+	Timeout time.Duration `yaml:"timeout" env-default:"4s"`
 }
 
 type Database struct {

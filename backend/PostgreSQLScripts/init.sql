@@ -60,14 +60,14 @@ CREATE TABLE games_genres (
     count INT DEFAULT 0,
     UNIQUE (game_id, genre_id)
 );
-create table games_developed_by
-(
-    game_developer_id serial primary key,
-    game_id int not null references games(game_id),
-    company_id int not null references companies(company_id),
-    good_percentage int not null check (good_percentage between 0 and 100),
-    good_percentage_latest int not null check (good_percentage_latest between 0 and 100)
-);
+-- create table games_developed_by
+-- (
+--     game_developer_id serial primary key,
+--     game_id int not null references games(game_id),
+--     company_id int not null references companies(company_id),
+--     good_percentage int not null check (good_percentage between 0 and 100),
+--     good_percentage_latest int not null check (good_percentage_latest between 0 and 100)
+-- );
 
 create table discounts
 (

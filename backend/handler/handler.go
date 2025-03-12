@@ -5,6 +5,7 @@ import (
 
 	authToken "github.com/Communinst/GolangWebStore/backend/JSONWebTokens"
 	"github.com/Communinst/GolangWebStore/backend/service"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,6 +22,15 @@ func New(service *service.Service) *Handler {
 func (h *Handler) InitRoutes(middleware ...gin.HandlerFunc) *gin.Engine {
 	router := gin.Default()
 	router.Use(middleware...)
+
+	// Configure CORS to allow all origins for testing
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins:  true,
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 
 	// open for eo
 	welcome := router.Group("/welcome")
@@ -133,6 +143,7 @@ func (h *Handler) InitRoutes(middleware ...gin.HandlerFunc) *gin.Engine {
 		reviews.GET("/user/:user_id", h.getReviewsByUserID)
 	}
 
+	// ADMIN
 	admin := router.Group("/admin")
 	{
 		wallets := admin.Group("/wallets")
@@ -239,6 +250,13 @@ func (h *Handler) InitRoutes(middleware ...gin.HandlerFunc) *gin.Engine {
 			dumps.POST("/create", h.createDump)
 			dumps.POST("/restore", h.restoreDump)
 			dumps.GET("/", h.getAllDumps)
+		}
+		users := admin.Group("/users")
+		{
+			users.POST("/create", h.postUser)
+			users.GET("/", h.getAllUsers)
+			users.DELETE("/:id", h.deleteUser)
+			users.PUT("/:id/role/:role_id", h.updateUserRole)
 		}
 	}
 

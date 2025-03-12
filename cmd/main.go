@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"log/slog"
 	"os"
@@ -52,6 +53,8 @@ func main() {
 	repository := repository.New(db)
 	service := service.New(repository)
 	handler := handler.New(service)
+
+	fmt.Printf("%s", config.Address)
 
 	server := server.New(
 		config.Address,

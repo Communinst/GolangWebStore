@@ -72,3 +72,24 @@ func (h *Handler) updateUserRole(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User role updated successfully"})
 }
+
+// func (h *Handler) updateUser(c *gin.Context) {
+// 	userId, err := strconv.Atoi(c.Param("user_id"))
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+// 		return
+// 	}
+
+// 	roleId, err := strconv.Atoi(c.Param("role_id"))
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid role ID"})
+// 		return
+// 	}
+
+// 	if err := h.service.UserServiceInterface.PutUserRole(c.Request.Context(), userId, roleId); err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user role"})
+// 		return
+// 	}
+
+// 	c.JSON(http.StatusOK, gin.H{"message": "User role updated successfully"})
+// }

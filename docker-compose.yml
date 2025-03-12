@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: rumarkethubfrontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_BACKEND_URL=http://host.docker.internal:8080
+    networks:
+      - network
+
+
+networks:
+  network:
+    driver: bridge

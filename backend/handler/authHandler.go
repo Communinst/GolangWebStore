@@ -46,7 +46,10 @@ func (h *Handler) signUp(c *gin.Context) {
 	}
 
 	// Only proceed with sign-up if there are no existing users
-	if len(userCount) > 0 {
+	if len(userCount) == 0 {
+		roleId, _ := strconv.ParseInt(os.Getenv("DEFAULT_ADMIN_ROLE_ID"), 10, 64)
+		user.RoleId = int(roleId)
+	} else {
 		roleId, _ := strconv.ParseInt(os.Getenv("DEFAULT_USER_ROLE_ID"), 10, 64)
 		user.RoleId = int(roleId)
 	}
@@ -110,10 +113,10 @@ func (h *Handler) signIn(c *gin.Context) {
 	defaultAdmin, _ := strconv.ParseInt(os.Getenv("DEFAULT_ADMIN_ROLE_ID"), 10, 64)
 	if user.RoleId == int(defaultAdmin) {
 		//c.Redirect(http.StatusOK, "/admin")
-		c.JSON(http.StatusOK, gin.H{"message": "Hello, admin", "token": userToken, "redirect": "/admin/"})
+		c.JSON(http.StatusOK, gin.H{"message": "Hello, admin", "token": userToken, "redirect": "/admin/", "role": "admin"})
 	} else {
 		//c.Redirect(http.StatusOK, "/api")
-		c.JSON(http.StatusOK, gin.H{"message": "Hello, user", "token": userToken, "redirect": "/api"})
+		c.JSON(http.StatusOK, gin.H{"message": "Hello, user", "token": userToken, "redirect": "/api", "role": "user"})
 	}
 
 	//c.JSON(http.StatusOK, gin.H{"token": userToken})
