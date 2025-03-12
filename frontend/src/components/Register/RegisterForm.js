@@ -6,6 +6,7 @@ import { postRegister } from "../../utils/Fetch/Register";
 import { isValidEmail } from "../../utils/Parse";
 
 const RegisterForm = () => {
+    const [userLogin, setLogin] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -33,7 +34,7 @@ const RegisterForm = () => {
         }
 
         try {
-            await postRegister(login, navigate, email, password, setSuccess);
+            await postRegister(login, navigate, userLogin, email, password, setSuccess);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -43,6 +44,16 @@ const RegisterForm = () => {
 
     return (
         <form onSubmit={handleRegister} className="register-form">
+            <div className="form-group">
+                <label htmlFor="login">Login</label>
+                <input
+                    type="login"
+                    id="login"
+                    value={userLogin}
+                    onChange={(e) => setLogin(e.target.value)}
+                    required
+                />
+            </div>
             <div className="form-group">
                 <label htmlFor="email">Email</label>
                 <input
@@ -63,6 +74,7 @@ const RegisterForm = () => {
                     required
                 />
             </div>
+            
             <div className="form-group">
                 <label htmlFor="confirmPassword">Confirm Password</label>
                 <input

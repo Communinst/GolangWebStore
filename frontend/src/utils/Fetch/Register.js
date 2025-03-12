@@ -2,16 +2,20 @@
 export const postRegister = async (
     login,
     navigate,
+    userLogin,
     email,
     password,
     setSuccess
 ) => {
-    const response = await fetch("/register", {
+    const response = await fetch("/welcome/auth/sign-up", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+            login: userLogin,
+            email : email, 
+            password : password }),
     });
 
     if (response.ok) {
@@ -25,12 +29,14 @@ export const postRegister = async (
 };
 //!done
 export const postLogin = async (login, navigate, email, password) => {
-    const response = await fetch("/login", {
+    const response = await fetch("/welcome/auth/sign-in", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+            email : email, 
+            password : password }),
     });
 
     if (response.ok) {
