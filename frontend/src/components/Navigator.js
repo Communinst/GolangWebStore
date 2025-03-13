@@ -16,7 +16,6 @@ import { backup } from "../utils/Fetch/BackupsF";
 import { MdEvent } from "react-icons/md";
 import { GiShoppingBag } from "react-icons/gi";
 import { FaRegMessage } from "react-icons/fa6";
-import Cart from "../components/Cart"; // Import the Cart component
 
 export const getNavigateMenu = () => {
     const { isAuthenticated, logout, userType, user } = useAuth();
@@ -85,7 +84,6 @@ export const getNavigateMenu = () => {
                         <FaSignOutAlt /> Logout
                     </Link>
                 )}
-                {isAuthenticated && <Cart />} {/* Add the Cart component */}
             </nav>
         </div>
     );

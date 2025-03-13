@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { fetchGameById, updateGame } from '../utils/Fetch/GameF';
-import { addGameToCart } from '../utils/Fetch/CartF'; // Import the addGameToCart function
 import { useNavigate } from "react-router-dom";
 import { Alert } from "./Alert";
 import { useAuth } from "../contexts/AuthContext";

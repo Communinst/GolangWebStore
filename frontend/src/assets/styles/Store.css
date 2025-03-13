@@ -1,19 +1,26 @@
-/* Store.css */
+/* Store Container */
 .store-container {
+    font-family: Arial, sans-serif;
+    background-color: #f9f6f0; /* Warm off-white background */
+    color: #333;
     padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
+/* Header */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    padding: 10px 0;
+    border-bottom: 2px solid #e0a96d; /* Warm orange border */
 }
 
 .logo {
-    flex: 1;
-    font-size: 1.5em;
+    font-size: 24px;
     font-weight: bold;
+    color: #e0a96d; /* Warm orange color */
 }
 
 .search-bar {
@@ -22,69 +29,165 @@
 }
 
 .search-bar input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     margin-right: 10px;
 }
 
+.search-bar button {
+    padding: 8px 16px;
+    background-color: #e0a96d; /* Warm orange color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-bar button:hover {
+    background-color: #cc9259; /* Darker orange on hover */
+}
+
+/* Admin Buttons */
 .admin-buttons {
     display: flex;
     gap: 10px;
 }
 
+.admin-buttons button {
+    padding: 8px 16px;
+    background-color: #e0a96d; /* Warm orange color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.admin-buttons button:hover {
+    background-color: #cc9259; /* Darker orange on hover */
+}
+
+/* Game List */
 .game-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    margin-top: 20px;
 }
 
 .game-record {
     display: flex;
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 5px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #e0a96d; /* Warm orange border */
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: white;
+    transition: background-color 0.3s;
+}
+
+.game-record:hover {
+    background-color: #f9f6f0; /* Warm off-white on hover */
 }
 
 .game-details {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
 }
 
 .game-name h2 {
+    font-size: 20px;
     margin: 0;
+    color: #e0a96d; /* Warm orange color */
+}
+
+.publisher-id, .game-price {
+    font-size: 16px;
+    color: #666;
 }
 
 .game-image img {
     max-width: 100px;
-    max-height: 100px;
-    margin-left: 20px;
+    border-radius: 8px;
 }
 
+/* Modal */
 .modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
     position: relative;
+}
+
+.modal-content h2 {
+    color: #e0a96d; /* Warm orange color */
+}
+
+.modal-content input, .modal-content textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-buttons button {
+    padding: 10px 20px;
+    background-color: #e0a96d; /* Warm orange color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-buttons button:hover {
+    background-color: #cc9259; /* Darker orange on hover */
 }
 
 .close {
     position: absolute;
     top: 10px;
     right: 10px;
+    font-size: 24px;
     cursor: pointer;
 }
 
-.modal-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
+.error {
+    color: red;
+}
+
+.success {
+    color: green;
+}
+
+/* Alert */
+.alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #e0a96d; /* Warm orange color */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.alert .close {
+    cursor: pointer;
+    font-size: 18px;
 }

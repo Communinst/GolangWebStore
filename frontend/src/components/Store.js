@@ -213,6 +213,7 @@ const Store = () => {
             )}
         </div>
     );
+    
 };
 
 export default Store;
