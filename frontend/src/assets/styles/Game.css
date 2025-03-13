@@ -1,0 +1,44 @@
+/* Game.css */
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.game-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.game-header h1 {
+    margin-bottom: 10px;
+}
+
+.game-image img {
+    max-width: 200px;
+    max-height: 200px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.game-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.game-details div {
+    margin-bottom: 10px;
+}
+
+.admin-controls {
+    margin-top: 20px;
+}
+
+.admin-controls button {
+    margin-right: 10px;
+}

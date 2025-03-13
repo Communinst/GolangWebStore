@@ -3,7 +3,7 @@ package entities
 import "time"
 
 type Game struct {
-	GameId      int       `json:"game_id " db:"game_id"`
+	GameId      int       `json:"game_id" db:"game_id"`
 	PublisherId int       `json:"publisher_id" db:"publisher_id"`
 	Name        string    `json:"name" db:"name"`
 	Description string    `json:"description" db:"description"`

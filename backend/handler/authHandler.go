@@ -103,14 +103,14 @@ func (h *Handler) signIn(c *gin.Context) {
 	if expiry == 0 {
 		log.Fatalf("AUTHORIZATION_EXPIRE_TIME environment variable not set")
 	}
-	userToken, err := h.service.GenerateAuthToken(user, "your-secret-key", 72) // 72 hours expiration
+	userToken, err := h.service.GenerateAuthToken(user, token, 72) // 72 hours expiration
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
 
-	fmt.Printf("%s\n", user.Password)
 	defaultAdmin, _ := strconv.ParseInt(os.Getenv("DEFAULT_ADMIN_ROLE_ID"), 10, 64)
+	fmt.Printf("%s\n", userToken)
 	if user.RoleId == int(defaultAdmin) {
 		//c.Redirect(http.StatusOK, "/admin")
 		c.JSON(http.StatusOK, gin.H{"token": userToken, "role": "admin", "userId": user.UserId})

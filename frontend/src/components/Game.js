@@ -1,27 +1,37 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { fetchGameById, updateGame } from '../utils/Fetch/GameF';
+import { addGameToCart } from '../utils/Fetch/CartF'; // Import the addGameToCart function
 import { useNavigate } from "react-router-dom";
 import { Alert } from "./Alert";
 import { useAuth } from "../contexts/AuthContext";
+import '../assets/styles/Game.css'; // Ensure you have a CSS file for styling
 
 const Game = () => {
     const { id } = useParams();
     const [game, setGame] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
     const [alertMessage, setAlertMessage] = useState("");
+    const navigate = useNavigate();
+    const fileInputRef = useRef(null);
+
+    const { isAuthenticated, userType, user } = useAuth();
+    const token = localStorage.getItem("authToken");
 
     useEffect(() => {
         const loadGame = async () => {
-            const gameData = await fetchGameById(id);
-            setGame(gameData);
+            try {
+                const gameData = await fetchGameById(token, id);
+                setGame(gameData);
+            } catch (error) {
+                setError(error.message);
+            }
             setIsLoading(false);
         };
 
         loadGame();
-    }, [id]);
+    }, [id, token]);
 
     const handleAlertClose = () => setAlertMessage("");
 
@@ -45,19 +55,12 @@ const Game = () => {
         }
     };
 
-    const fileInputRef = useRef(null);
-
     const handleButtonClick = () => {
         fileInputRef.current.click();
     };
 
-    const { isAuthenticated, userType } = useAuth();
-    if (!isAuthenticated)
-        return <p className="loading">You need to sign in to see this page...</p>;
-
     const handleSubmit = async (e) => {
         setIsLoading(true);
-        const token = localStorage.getItem("authToken");
         try {
             await updateGame(token, game);
             setAlertMessage("Game has been updated successfully");
@@ -65,6 +68,15 @@ const Game = () => {
             setError(error.message);
         }
         setIsLoading(false);
+    };
+
+    const handleAddToCart = async () => {
+        try {
+            await addGameToCart(token, user.user_id, game.game_id);
+            setAlertMessage("Game added to cart successfully!");
+        } catch (err) {
+            setError(err.message);
+        }
     };
 
     if (isLoading) {
@@ -76,46 +88,37 @@ const Game = () => {
     }
 
     return (
-        <div>
-            {isAuthenticated && userType === "admin" ? (
-                <h1>Edit Game</h1>
-            ) : (
-                <h1>View Game</h1>
-            )}
-
-            <div>
-                <div>
-                    <label>ID:</label>
-                    <p>{game.id}</p>
+        <div className="game-container">
+            <div className="game-header">
+                <h1>{game.name}</h1>
+                <div className="game-image">
+                    <img src={`/images/${game.name}.jpg`} alt={game.name} />
                 </div>
-                <div>
-                    <label>Name:</label>
-                    <input
-                        type="text"
-                        value={game.name || ''}
-                        onChange={(e) => handleChange('name', e.target.value)}
-                        disabled={!isAuthenticated || userType !== "admin"}
-                    />
-                </div>
-                <div>
-                    <label>Genre:</label>
-                    <input
-                        type="text"
-                        value={game.genre || ''}
-                        onChange={(e) => handleChange('genre', e.target.value)}
-                        disabled={!isAuthenticated || userType !== "admin"}
-                    />
-                </div>
+            </div>
+            <div className="game-details">
                 <div>
                     <label>Price:</label>
-                    <input
-                        type="text"
-                        value={game.price || ''}
-                        onChange={(e) => handleChange('price', e.target.value)}
-                        disabled={!isAuthenticated || userType !== "admin"}
-                    />
+                    <p>{game.price}</p>
                 </div>
                 <div>
+                    <label>Publisher ID:</label>
+                    <p>{game.publisher_id}</p>
+                </div>
+                <div>
+                    <label>Rating:</label>
+                    <p>{game.rating}</p>
+                </div>
+                <div>
+                    <label>Description:</label>
+                    <p>{game.description}</p>
+                </div>
+                <div>
+                    <label>Reviews:</label>
+                    <p>{game.reviews}</p>
+                </div>
+            </div>
+            {isAuthenticated && userType === "admin" && (
+                <div className="admin-controls">
                     <input
                         type="file"
                         id="file"
@@ -123,27 +126,18 @@ const Game = () => {
                         onChange={handleImageChange}
                         ref={fileInputRef}
                         style={{ display: 'none' }}
-                        disabled={!isAuthenticated || userType !== "admin"}
                     />
-                    {(isAuthenticated && userType === "admin") &&
-                        <button onClick={handleButtonClick} disabled={!isAuthenticated || userType !== "admin"}>
-                            {game.image ? "Change photo" : "Choose a photo"}
-                        </button>
-                    }
+                    <button onClick={handleButtonClick}>Change Photo</button>
+                    <button onClick={handleSubmit}>Save Changes</button>
                 </div>
-                {game.image && <img src={`data:image/png;base64,${game.image}`} alt="game" />}
-                <div>
-                    {(isAuthenticated && userType === "admin") &&
-                        <button onClick={handleSubmit} disabled={!isAuthenticated || userType !== "admin"}>
-                            Save Changes
-                        </button>
-                    }
-                </div>
-                {error && <p className="error">{error}</p>}
-                {alertMessage !== "" && (
-                    <Alert message={alertMessage} onClose={handleAlertClose} />
-                )}
-            </div>
+            )}
+            {isAuthenticated && (
+                <button onClick={handleAddToCart}>Add to Cart</button>
+            )}
+            {error && <p className="error">{error}</p>}
+            {alertMessage !== "" && (
+                <Alert message={alertMessage} onClose={handleAlertClose} />
+            )}
         </div>
     );
 };
