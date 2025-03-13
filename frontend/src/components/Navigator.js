@@ -8,18 +8,17 @@ import {
     FaUser,
     FaArrowRight,
     FaFileContract,
-    FaSearch 
+    FaSearch
 } from "react-icons/fa";
 import { MdOutlineBackup } from "react-icons/md";
 import { backup } from "../utils/Fetch/BackupsF";
 import { MdEvent } from "react-icons/md";
-import { BiFoodMenu } from "react-icons/bi";
+import { GiShoppingBag } from "react-icons/gi"; // New icon for store
 import { FaRegMessage } from "react-icons/fa6";
 
 export const getNavigateMenu = () => {
   const { isAuthenticated, logout, userType } = useAuth();
   const [error, setError] = useState(null);
-
 
   const doBackUp = async () => {
     try {
@@ -33,62 +32,58 @@ export const getNavigateMenu = () => {
   if (error) {
     return <p className="error">{error}</p>;
   }
-  if (error) {
-    return <p className="error">{error}</p>;
-  }
-
 
   return (
     <div>
-        <nav className="app-nav">
+      <nav className="app-nav">
         <Link to="/" className="nav-link">
-            <FaHome /> Homepage
+          <FaHome /> Homepage
         </Link>
-        <Link to="/markets" className="nav-link">
-          <BiFoodMenu /> Markets
+        <Link to="/store" className="nav-link">
+          <GiShoppingBag /> Store
         </Link>
         <Link to="/events" className="nav-link">
-            <MdEvent /> Events
+          <MdEvent /> Events
         </Link>
-        {isAuthenticated  && (
-          <Link to="/contracts" className="nav-link" >
+        {isAuthenticated && (
+          <Link to="/contracts" className="nav-link">
             <FaFileContract /> My contracts
           </Link>
         )}
         {isAuthenticated && (
-            <Link to="/profile" className="nav-link" >
+          <Link to="/profile" className="nav-link">
             <FaUser /> Profile
-            </Link>
+          </Link>
         )}
         {isAuthenticated && (
-            <Link to="/mail" className="nav-link" >
+          <Link to="/mail" className="nav-link">
             <FaRegMessage /> Mail
-            </Link>
+          </Link>
         )}
         {isAuthenticated && userType === "admin" && (
-            <Link to="/backups" className="nav-link" >
+          <Link to="/backups" className="nav-link">
             <MdOutlineBackup /> Backup List
-            </Link>
+          </Link>
         )}
         {isAuthenticated && userType === "admin" && (
-            <Link to="/" className="nav-link" onClick={() => { doBackUp(); logout(); }}>
+          <Link to="/" className="nav-link" onClick={() => { doBackUp(); logout(); }}>
             <MdOutlineBackup /> Make backup
-            </Link>
+          </Link>
         )}
-        <Link to="/search" className="nav-link" >
-        <FaSearch /> Search
+        <Link to="/search" className="nav-link">
+          <FaSearch /> Search
         </Link>
         {!isAuthenticated && (
-            <Link to="/login" className="nav-link" >
+          <Link to="/login" className="nav-link">
             <FaSignInAlt /> Login
-            </Link>
+          </Link>
         )}
         {isAuthenticated && (
-            <Link to="/" className="nav-link" onClick={() => {logout(); }}>
+          <Link to="/" className="nav-link" onClick={() => { logout(); }}>
             <FaSignOutAlt /> Logout
-            </Link>
+          </Link>
         )}
-        </nav>
+      </nav>
     </div>
   );
 };

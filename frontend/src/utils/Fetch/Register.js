@@ -41,7 +41,7 @@ export const postLogin = async (login, navigate, email, password) => {
 
     if (response.ok) {
         const data = await response.json();
-        login(data.token, data.userType, data.userId);
+        login(data.token, data.role, data.userId);
         navigate("/");
     } else {
         const errorData = await response.json();

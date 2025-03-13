@@ -113,10 +113,10 @@ func (h *Handler) signIn(c *gin.Context) {
 	defaultAdmin, _ := strconv.ParseInt(os.Getenv("DEFAULT_ADMIN_ROLE_ID"), 10, 64)
 	if user.RoleId == int(defaultAdmin) {
 		//c.Redirect(http.StatusOK, "/admin")
-		c.JSON(http.StatusOK, gin.H{"message": "Hello, admin", "token": userToken, "redirect": "/admin/", "role": "admin"})
+		c.JSON(http.StatusOK, gin.H{"token": userToken, "role": "admin", "userId": user.UserId})
 	} else {
 		//c.Redirect(http.StatusOK, "/api")
-		c.JSON(http.StatusOK, gin.H{"message": "Hello, user", "token": userToken, "redirect": "/api", "role": "user"})
+		c.JSON(http.StatusOK, gin.H{"token": userToken, "role": "user", "userId": user.UserId})
 	}
 
 	//c.JSON(http.StatusOK, gin.H{"token": userToken})
