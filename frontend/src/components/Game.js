@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { fetchGameById, updateGame } from '../utils/Fetch/GameF';
+import { addGameToCart } from '../utils/Fetch/CartF'; // Import the addGameToCart function
 import { useNavigate } from "react-router-dom";
 import { Alert } from "./Alert";
 import { useAuth } from "../contexts/AuthContext";
@@ -15,7 +16,7 @@ const Game = () => {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
 
-    const { isAuthenticated, userType, user } = useAuth();
+    const { isAuthenticated, userType, userId } = useAuth();
     const token = localStorage.getItem("authToken");
 
     useEffect(() => {
@@ -71,7 +72,7 @@ const Game = () => {
 
     const handleAddToCart = async () => {
         try {
-            await addGameToCart(token, user.user_id, game.game_id);
+            await addGameToCart(token, userId, game.game_id);
             setAlertMessage("Game added to cart successfully!");
         } catch (err) {
             setError(err.message);
@@ -131,7 +132,9 @@ const Game = () => {
                 </div>
             )}
             {isAuthenticated && (
-                <button onClick={handleAddToCart}>Add to Cart</button>
+                <button onClick={handleAddToCart} className="add-to-cart-button">
+                    Add to Cart
+                </button>
             )}
             {error && <p className="error">{error}</p>}
             {alertMessage !== "" && (

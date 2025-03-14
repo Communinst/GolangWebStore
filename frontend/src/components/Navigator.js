@@ -9,7 +9,8 @@ import {
     FaArrowRight,
     FaFileContract,
     FaSearch,
-    FaShoppingCart
+    FaShoppingCart,
+    FaWallet
 } from "react-icons/fa";
 import { MdOutlineBackup } from "react-icons/md";
 import { backup } from "../utils/Fetch/BackupsF";
@@ -40,9 +41,22 @@ export const getNavigateMenu = () => {
                 <Link to="/" className="nav-link">
                     <FaHome /> Homepage
                 </Link>
-                <Link to="/store" className="nav-link">
-                    <GiShoppingBag /> Store
-                </Link>
+                
+                {isAuthenticated && (
+                    <Link to="/store" className="nav-link">
+                        <GiShoppingBag /> Store
+                    </Link>
+                )}
+                {isAuthenticated && (
+                    <Link to="/cart" className="nav-link">
+                        <FaShoppingCart /> Cart
+                    </Link>
+                )}
+                {isAuthenticated && (
+                    <Link to="/wallet" className="nav-link">
+                        <FaWallet /> Wallet
+                    </Link>
+                )}
                 <Link to="/events" className="nav-link">
                     <MdEvent /> Events
                 </Link>

@@ -15,6 +15,8 @@ import ContractsList from "./components/ContractList.js";
 import Events from "./components/Events.js";
 import Search from "./components/Search.js";
 import MessageForm from "./components/MessageForm.js"; 
+import Cart from "./components/Cart.js"
+import Wallet from "./components/Wallet.js"
 
 const App = () => {
     return (
@@ -25,17 +27,13 @@ const App = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/backups" element={<Backup />} />
                     <Route path="/store" element={<Store />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/wallet" element={<Wallet />} />
                     <Route path="/game/:id" element={<Game />} /> {/* Updated route for Game */}
-                    <Route path="/tradeplace/:marketid/:id" element={<Tradeplace />} /> 
-                    <Route path="/contracts" element={<ContractsList />} />
 
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
 
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/mail" element={<MessageForm />} />
-
-                    <Route path="/events" element={<Events />} />
                     <Route path="/search" element={<Search />} />
                 </Routes>
             </div>

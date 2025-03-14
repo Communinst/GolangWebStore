@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"time"
 
 	entities "github.com/Communinst/GolangWebStore/backend/entity"
 	"github.com/Communinst/GolangWebStore/backend/repository"
@@ -16,10 +15,10 @@ func NewDumpService(repo repository.DumpRepo) *DumpService {
 	return &DumpService{repo: repo}
 }
 
-func (s *DumpService) InsertDump(ctx context.Context, filePath string) error {
+func (s *DumpService) InsertDump(ctx context.Context, filePath string, size int64) error {
 	dump := &entities.Dump{
-		Filename:  filePath,
-		CreatedAt: time.Now(),
+		Filename: filePath,
+		Size:     size,
 	}
 	return s.repo.InsertDump(ctx, dump)
 }

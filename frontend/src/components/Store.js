@@ -85,6 +85,10 @@ const Store = () => {
         navigate(`/game/${gameId}`);
     };
 
+    const handleGoToCart = () => {
+        navigate('/cart');
+    };
+
     if (isLoading) {
         return <p>Loading...</p>;
     }
@@ -112,6 +116,9 @@ const Store = () => {
                         <button onClick={() => setShowAddGenreModal(true)}>Add Genre</button>
                     </div>
                 )}
+                <button onClick={handleGoToCart} className="cart-button">
+                    Go to Cart
+                </button>
             </div>
             <div className="game-list">
                 {games.length === 0 ? (
@@ -213,7 +220,6 @@ const Store = () => {
             )}
         </div>
     );
-    
 };
 
 export default Store;

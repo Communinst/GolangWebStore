@@ -191,3 +191,17 @@
     cursor: pointer;
     font-size: 18px;
 }
+
+.cart-button {
+    background-color: #e0a96d; /* Warm orange color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.cart-button:hover {
+    background-color: #cc9259; /* Darker orange on hover */
+}

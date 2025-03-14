@@ -98,7 +98,7 @@ type ReviewServiceInterface interface {
 }
 
 type DumpServiceInterface interface {
-	InsertDump(ctx context.Context, filePath string) error
+	InsertDump(ctx context.Context, filePath string, size int64) error
 	GetAllDumps(ctx context.Context) ([]entities.Dump, error)
 }
 

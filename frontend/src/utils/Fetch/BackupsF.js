@@ -1,6 +1,6 @@
 //!done
 export const backup = async (token) => {
-    const response = await fetch(`/backup/add`, {
+    const response = await fetch(`/admin/dumps/create`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -10,19 +10,20 @@ export const backup = async (token) => {
 
     if (!response.ok) {
         const errorData = await response.json();
-        const errorMessage = errorData.detail || "Failed to backup";
+        const errorMessage = errorData.detail || "Failed to dump";
         throw new Error(errorMessage);
     }
 };
 //!done
-export const postBackup = async (token, filename) => {
-    const response = await fetch(`/restore`, {
+export const postDumps = async (token, filename) => {
+    const response = await fetch(`/admin/dumps/restore`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ filename }),
+        body: JSON.stringify({ 
+            filename : filename }),
     });
 
     if (!response.ok) {
@@ -32,10 +33,11 @@ export const postBackup = async (token, filename) => {
     }
 };
 //!done
-export const getBackups = async (token) => {
-    const response = await fetch(`/backup/get/all`, {
+export const getDumps = async (token) => {
+    const response = await fetch(`/admin/dumps`, {
         method: "GET",
         headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
     });
@@ -47,5 +49,6 @@ export const getBackups = async (token) => {
     }
 
     const data = await response.json();
+    console.log("API Response:", data);
     return data;
 };

@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
+	entities "github.com/Communinst/GolangWebStore/backend/entity"
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,16 +32,27 @@ func (h *Handler) updateWalletBalance(c *gin.Context) {
 		return
 	}
 
-	var request struct {
-		Amount int64 `json:"amount"`
-	}
+	var wallet entities.Wallet
 
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.ShouldBindJSON(&wallet); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
 
-	if err := h.service.WalletServiceInterface.UpdateWalletBalance(c.Request.Context(), userId, request.Amount); err != nil {
+	userWaller, err := h.service.WalletServiceInterface.GetWalletByUserID(c.Request.Context(), userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update wallet balance"})
+		return
+	}
+
+	log.Printf("%d + %d", userWaller.Balance, wallet.Balance)
+
+	if userWaller.Balance+wallet.Balance < 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Not enough GOLD"})
+		return
+	}
+
+	if err := h.service.WalletServiceInterface.UpdateWalletBalance(c.Request.Context(), userId, int64(wallet.Balance)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update wallet balance"})
 		return
 	}

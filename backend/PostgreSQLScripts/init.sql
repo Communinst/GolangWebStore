@@ -130,8 +130,7 @@ create table ownerships
 CREATE TABLE dumps (
     id SERIAL PRIMARY KEY,
     filename VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL,
-    size BIGINT
+    size BIGINT NOT NULL
 );
 
 
@@ -145,15 +144,15 @@ BEGIN
     FROM roles  
     WHERE role_id = NEW.role_id;
     IF user_role = 'User' THEN
-        -- Insert a new cart entry for the newly inserted user
+        
         INSERT INTO carts (user_id)
         VALUES (NEW.user_id);
 
-        -- Insert a new wallet entry for the newly inserted user
+        
         INSERT INTO wallets (user_id, balance)
         VALUES (NEW.user_id, 0);
     END IF;
-        -- Return the new row to indicate that the trigger succeeded
+        
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -181,7 +180,6 @@ ON DELETE CASCADE;
 CREATE OR REPLACE FUNCTION check_if_valid_count()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Check if the new count value is negative
     IF NEW.count < 0 THEN
         NEW.count := 0;
     END IF;

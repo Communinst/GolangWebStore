@@ -36,7 +36,6 @@ func (repo *walletRepo) GetWalletByUserID(ctx context.Context, userId int) (*ent
 				Msg:        "Wallet not found",
 			}
 		}
-		slog.Error("error retrieving wallet by user ID")
 		return nil, &customErrors.ErrorWithStatusCode{
 			HTTPStatus: http.StatusInternalServerError,
 			Msg:        "failed to retrieve wallet",

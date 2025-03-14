@@ -39,7 +39,7 @@ func New(address string, handler http.Handler,
 
 func (s *Server) Run() {
 	slog.Info("Server is running at", "address", s.httpServer.Addr)
-	// if
+
 	shutdownChan := make(chan bool, 1)
 
 	go func() {

@@ -16,8 +16,8 @@ func NewDumpRepo(db *sqlx.DB) *dumpRepo {
 }
 
 func (r *dumpRepo) InsertDump(ctx context.Context, dump *entities.Dump) error {
-	query := "INSERT INTO dumps (filename, created_at) VALUES ($1, $2)"
-	_, err := r.db.ExecContext(ctx, query, dump.Filename, dump.CreatedAt)
+	query := "INSERT INTO dumps (filename, size) VALUES ($1, $2)"
+	_, err := r.db.ExecContext(ctx, query, dump.Filename, dump.Size)
 	return err
 }
 
