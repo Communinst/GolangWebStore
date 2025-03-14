@@ -13,6 +13,7 @@ import Search from "./components/Search.js";
 import Cart from "./components/Cart.js"
 import Wallet from "./components/Wallet.js"
 import Ownership from "./components/Ownership.js";
+import "./assets/styles/App.css"
 
 const App = () => {
     return (
@@ -29,8 +30,6 @@ const App = () => {
                     <Route path="/ownership" element={<Ownership />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-
-                    <Route path="/search" element={<Search />} />
                 </Routes>
             </div>
         </div>

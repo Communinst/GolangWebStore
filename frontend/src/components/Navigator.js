@@ -57,16 +57,6 @@ export const getNavigateMenu = () => {
                         <FaWallet /> Wallet
                     </Link>
                 )}
-                {isAuthenticated && (
-                    <Link to="/profile" className="nav-link">
-                        <FaUser /> Profile
-                    </Link>
-                )}
-                {isAuthenticated && (
-                    <Link to="/mail" className="nav-link">
-                        <FaRegMessage /> Mail
-                    </Link>
-                )}
                 {isAuthenticated && userType === "admin" && (
                     <Link to="/backups" className="nav-link">
                         <MdOutlineBackup /> Backup List
@@ -82,9 +72,6 @@ export const getNavigateMenu = () => {
                         <FaRegMessage /> Ownership
                     </Link>
                 )} 
-                <Link to="/search" className="nav-link">
-                    <FaSearch /> Search
-                </Link>
                 {!isAuthenticated && (
                     <Link to="/login" className="nav-link">
                         <FaSignInAlt /> Login

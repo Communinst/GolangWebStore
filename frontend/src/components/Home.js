@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaHome, FaShoppingCart } from "react-icons/fa";
+import "../assets/styles/Home.css"
 
 const Home = () => {
   return (

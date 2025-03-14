@@ -7,8 +7,8 @@
 
 body {
     font-family: "Arial", sans-serif;
-    background-color: #1e1e1e; /* Темный фон */
-    color: #e0e0e0; /* Светлый текст */
+    background-color: #1e1e1e; /* Dark background */
+    color: #e0e0e0; /* Light text */
     line-height: 1.6;
 }
 
@@ -18,35 +18,78 @@ body {
     align-items: center;
     justify-content: flex-start;
     min-height: 100vh;
+    padding: 20px;
 }
 
 .app-nav {
     width: 100%;
-    background-color: #292929; /* Темный для навигации */
+    background: linear-gradient(90deg, #292929, #3a3a3a); /* Gradient for navigation */
     display: flex;
     justify-content: center;
-    padding: 15px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .nav-link {
-    color: #ffffff; /* Белый текст */
+    color: #ffffff; /* White text */
     text-decoration: none;
-    margin: 0 15px;
+    margin: 0 20px;
     font-size: 18px;
     font-weight: bold;
+    position: relative;
+    transition: color 0.3s ease;
 }
 
-.nav-link:hover {
-    text-decoration: underline;
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #800080; /* Purple underline */
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-out;
+}
+
+.nav-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
 }
 
 .main-content {
     width: 100%;
-    margin: 20px;
-    padding: 20px;
-    background-color: #2a2a2a; /* Темный для основного контента */
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Более темные тени */
+    margin: 30px 0;
+    padding: 30px;
+    background-color: #2a2a2a; /* Dark content background */
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.main-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 200%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
 }
 
 .home-container {
@@ -59,32 +102,33 @@ body {
 h1 {
     font-size: 36px;
     margin-bottom: 20px;
-    color: #f0f0f0; /* Светлый заголовок */
+    color: #f0f0f0; /* Light heading */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 button {
     font-weight: bold;
-    padding: 10px 20px;
-    background-color: #444444; /* Темный фон кнопки */
-    color: #ffffff; /* Белый текст */
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #444444, #666666); /* Gradient button background */
+    color: #ffffff; /* White text */
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s ease;
-    margin: 2px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin: 5px;
 }
 
 button:hover {
-    background-color: #666666; /* Светлее на hover */
+    background-color: #800080; /* Purple on hover */
+    transform: scale(1.05);
 }
-
 
 .error {
     margin: 20px;
     width: 100%;
     font-weight: bold;
-    color: #ff4c4c; /* Яркий красный для ошибок */
+    color: #ff4c4c; /* Bright red for errors */
     text-align: center;
 }
 
@@ -101,30 +145,36 @@ input[type="text"],
 input[type="email"],
 input[type="password"] {
     width: 100%;
-    padding: 10px;
+    padding: 15px;
     margin-bottom: 20px;
-    border: 1px solid #555; /* Темная рамка */
-    background-color: #333; /* Темный input фон */
-    color: #f0f0f0; /* Светлый текст для в input */
-    border-radius: 5px;
+    border: 1px solid #555; /* Dark border */
+    background-color: #333; /* Dark input background */
+    color: #f0f0f0; /* Light text for input */
+    border-radius: 8px;
     font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+input:focus {
+    border-color: #800080; /* Purple border on focus */
+    outline: none;
 }
 
 form {
     max-width: 400px;
     margin: 0 auto;
-    padding: 20px;
-    background-color: #292929; /* Темный для формы */
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Подчеркнутая тень */
+    padding: 30px;
+    background-color: #292929; /* Dark form background */
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 form button {
     width: 100%;
     font-weight: bold;
-    background-color: #444444;
+    background: linear-gradient(135deg, #444444, #666666);
 }
 
 form button:hover {
-    background-color: #666666;
+    background-color: #800080; /* Purple on hover */
 }
