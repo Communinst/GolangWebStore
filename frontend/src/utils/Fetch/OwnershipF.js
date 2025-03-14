@@ -43,12 +43,15 @@ export const deleteOwnershipByID = async (token, ownershipId) => {
 
 export const postOwnershipByUserId = async (token, userId, gameId) => {
     try {
-        const response = await fetch(`/api/ownerships/user/${userId}/games/${gameId}`, {
-            method: "GET",
+        const response = await fetch(`/api/ownerships/${userId}/games/${gameId}`, {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             },
+            body: JSON.stringify({
+                minutes_spent : 0,
+            }),
         });
 
         if (!response.ok) {

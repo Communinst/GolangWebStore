@@ -39,9 +39,9 @@ const Cart = () => {
 
     const handlePurchase = async (price) => {
         try {
-            await updateWalletBalance(token, userId, -price)
+            //await updateWalletBalance(token, userId, -price)
             for (const game of cart) {
-                await postOwnershipByUserId(token, userId, game);
+                await postOwnershipByUserId(token, parseInt(userId), parseInt(game.game_id));
             }
             const updatedCart = await getCartByUserID(token, userId)
             setCart(updatedCart)

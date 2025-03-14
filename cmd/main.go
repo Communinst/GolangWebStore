@@ -47,8 +47,10 @@ func main() {
 	config := setupConfig()
 
 	db := strg.InitDBConn(&config.Database)
-	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\init.sql")
-	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\roles.sql")
+	// strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\init.sql")
+	// strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\roles.sql")
+	strg.RunDBTableScript(db, "C:\\Users\\Asus\\Desktop\\Coding\\GolangWebStore\\backend\\PostgreSQLScripts\\init.sql")
+	strg.RunDBTableScript(db, "C:\\Users\\Asus\\Desktop\\Coding\\GolangWebStore\\backend\\PostgreSQLScripts\\roles.sql")
 
 	repository := repository.New(db)
 	service := service.New(repository)
@@ -65,7 +67,8 @@ func main() {
 
 	server.Run()
 
-	strg.RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\drop.sql")
+	// RunDBTableScript(db, "X:\\Coding\\Golang\\backend\\PostgreSQLScripts\\drop.sql")
+	strg.RunDBTableScript(db, "C:\\Users\\Asus\\Desktop\\Coding\\GolangWebStore\\backend\\PostgreSQLScripts\\drop.sql")
 	if err := strg.CloseDBConn(db); err != nil {
 		log.Fatal("Failed to cease DB connection!")
 	} else {

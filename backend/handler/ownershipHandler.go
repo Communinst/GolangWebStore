@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	entities "github.com/Communinst/GolangWebStore/backend/entity"
 	"github.com/gin-gonic/gin"
 )
 
@@ -37,14 +38,9 @@ func (h *Handler) addOwnership(c *gin.Context) {
 		return
 	}
 
-	var request struct {
-		MinutesSpent int64     `json:"minutes_spent"`
-		ReceiptDate  time.Time `json:"receipt_date"`
-	}
-
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-		return
+	request := &entities.Ownership{
+		ReceiptDate:  time.Now(),
+		MinutesSpent: 0,
 	}
 
 	if err := h.service.OwnershipServiceInterface.AddOwnership(c.Request.Context(), userId, gameId, request.MinutesSpent, request.ReceiptDate); err != nil {
