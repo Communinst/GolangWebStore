@@ -57,14 +57,6 @@ export const getNavigateMenu = () => {
                         <FaWallet /> Wallet
                     </Link>
                 )}
-                <Link to="/events" className="nav-link">
-                    <MdEvent /> Events
-                </Link>
-                {isAuthenticated && (
-                    <Link to="/contracts" className="nav-link">
-                        <FaFileContract /> My contracts
-                    </Link>
-                )}
                 {isAuthenticated && (
                     <Link to="/profile" className="nav-link">
                         <FaUser /> Profile

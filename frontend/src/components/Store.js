@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchGames, createGame, fetchGameByName } from "../utils/Fetch/GameF";
+import { fetchGames, createGame, fetchGameByName, deleteGame } from "../utils/Fetch/GameF";
 import { useNavigate } from "react-router-dom";
 import { Alert } from "./Alert";
 import { useAuth } from "../contexts/AuthContext";
@@ -21,6 +21,8 @@ const Store = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [showAddGameModal, setShowAddGameModal] = useState(false);
     const [showAddGenreModal, setShowAddGenreModal] = useState(false);
+    const [showRemoveGameModal, setShowRemoveGameModal] = useState(false);
+    const [gameIdToRemove, setGameIdToRemove] = useState("");
 
     const navigate = useNavigate();
     const { isAuthenticated, userType } = useAuth();
@@ -59,6 +61,18 @@ const Store = () => {
             await createGame(token, parseInt(gamePublisherId), gameName, parseInt(gamePrice), gameDescription);
             setSuccess("Game added successfully!");
             setShowAddGameModal(false); // Close the modal
+            const data = await fetchGames(token);
+            setGames(data);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const handleRemoveGame = async () => {
+        try {
+            await deleteGame(token, parseInt(gameIdToRemove));
+            setSuccess("Game deleted successfully!");
+            setShowRemoveGameModal(false); // Close the modal
             const data = await fetchGames(token);
             setGames(data);
         } catch (err) {
@@ -114,6 +128,7 @@ const Store = () => {
                     <div className="admin-buttons">
                         <button onClick={() => setShowAddGameModal(true)}>Add Game</button>
                         <button onClick={() => setShowAddGenreModal(true)}>Add Genre</button>
+                        <button onClick={() => setShowRemoveGameModal(true)}>Remove Game</button>
                     </div>
                 )}
                 <button onClick={handleGoToCart} className="cart-button">
@@ -215,11 +230,32 @@ const Store = () => {
                     </div>
                 </div>
             )}
+            {showRemoveGameModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <span className="close" onClick={() => setShowRemoveGameModal(false)}>&times;</span>
+                        <h2>Remove Game</h2>
+                        <input
+                            type="number"
+                            placeholder="Game ID"
+                            value={gameIdToRemove}
+                            onChange={(e) => setGameIdToRemove(e.target.value)}
+                        />
+                        <div className="modal-buttons">
+                            <button onClick={handleRemoveGame}>Remove Game</button>
+                            <button onClick={() => setShowRemoveGameModal(false)}>Cancel</button>
+                        </div>
+                        {error && <p className="error">{error}</p>}
+                        {success && <p className="success">{success}</p>}
+                    </div>
+                </div>
+            )}
             {alertMessage !== "" && (
                 <Alert message={alertMessage} onClose={() => setAlertMessage("")} />
             )}
         </div>
     );
+
 };
 
 export default Store;

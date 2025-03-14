@@ -125,6 +125,7 @@ export const deleteGame = async (token, gameId) => {
         const response = await fetch(`/admin/games/${gameId}`, {
             method: 'DELETE',
             headers: {
+                "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             },
         });
