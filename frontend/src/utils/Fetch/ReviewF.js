@@ -1,6 +1,6 @@
 export const fetchReviewsByGameId = async (token, gameId) => {
     try {
-        const response = await fetch(`/api/games/${gameId}/reviews`, {
+        const response = await fetch(`/api/reviews/game/${gameId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -21,15 +21,20 @@ export const fetchReviewsByGameId = async (token, gameId) => {
 };
 
 // Add a review for a game
-export const addReview = async (token, gameId, review) => {
+export const addReview = async (token, gameId, userId, review) => {
     try {
-        const response = await fetch(`/api/games/${gameId}/reviews`, {
+        const response = await fetch(`/api/reviews/${userId}/games/${gameId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             },
-            body: JSON.stringify(review),
+            body: JSON.stringify({
+                message : review.message,
+                recommended : review.recommended,
+                user_id : userId,
+                game_id : gameId
+            }),
         });
 
         if (!response.ok) {
@@ -45,7 +50,7 @@ export const addReview = async (token, gameId, review) => {
 // Delete a review
 export const deleteReview = async (token, reviewId) => {
     try {
-        const response = await fetch(`/api/reviews/${reviewId}`, {
+        const response = await fetch(`/admin/reviews/${reviewId}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

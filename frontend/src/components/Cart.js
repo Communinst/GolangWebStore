@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { addGameToCart, getCartByUserID, removeGameFromCart } from '../utils/Fetch/CartF';
 import { useAuth } from '../contexts/AuthContext';
 import { updateWalletBalance } from '../utils/Fetch/WalletF';
+import { postOwnershipByUserId } from '../utils/Fetch/OwnershipF';
 
 const Cart = () => {
     const [cart, setCart] = useState([]);
@@ -39,6 +40,9 @@ const Cart = () => {
     const handlePurchase = async (price) => {
         try {
             await updateWalletBalance(token, userId, -price)
+            for (const game of cart) {
+                await postOwnershipByUserId(token, userId, game);
+            }
             const updatedCart = await getCartByUserID(token, userId)
             setCart(updatedCart)
         } catch (err) {

@@ -5,11 +5,14 @@ import { addGameToCart } from '../utils/Fetch/CartF'; // Import the addGameToCar
 import { useNavigate } from "react-router-dom";
 import { Alert } from "./Alert";
 import { useAuth } from "../contexts/AuthContext";
+import { fetchReviewsByGameId, addReview, deleteReview } from '../utils/Fetch/ReviewF'
 import '../assets/styles/Game.css'; // Ensure you have a CSS file for styling
 
 const Game = () => {
     const { id } = useParams();
     const [game, setGame] = useState(null);
+    const [reviews, setReviews] = useState([]);
+    const [newReview, setNewReview] = useState({ message: "", recommended: true });
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [alertMessage, setAlertMessage] = useState("");
@@ -20,18 +23,46 @@ const Game = () => {
     const token = localStorage.getItem("authToken");
 
     useEffect(() => {
-        const loadGame = async () => {
-            try {
-                const gameData = await fetchGameById(token, id);
-                setGame(gameData);
-            } catch (error) {
-                setError(error.message);
-            }
-            setIsLoading(false);
+        const loadGameAndReviews = async () => {
+          try {
+            const gameData = await fetchGameById(token, id);
+            setGame(gameData);
+    
+            const reviewsData = await fetchReviewsByGameId(token, id);
+            setReviews(reviewsData);
+          } catch (error) {
+            setError(error.message);
+          }
+          setIsLoading(false);
         };
-
-        loadGame();
-    }, [id, token]);
+    
+        loadGameAndReviews();
+      }, [id, token]);
+    
+      const handleReviewChange = (e) => {
+        const { name, value } = e.target;
+        setNewReview({ ...newReview, [name]: value });
+      };
+    
+      const handleReviewSubmit = async () => {
+        try {
+          await addReview(token, id, userId, newReview);
+          const updatedReviews = await fetchReviewsByGameId(token, id);
+          setReviews(updatedReviews);
+          setNewReview({ message: "", recommended: true });
+        } catch (error) {
+          setError(error.message);
+        }
+      };
+    
+      const handleDeleteReview = async (reviewId) => {
+        try {
+          await deleteReview(token, reviewId);
+          setReviews(reviews.filter(review => review.review_id !== reviewId));
+        } catch (error) {
+          setError(error.message);
+        }
+      };
 
     const handleAlertClose = () => setAlertMessage("");
 
@@ -89,6 +120,46 @@ const Game = () => {
 
     return (
         <div className="game-container">
+            {isAuthenticated && (
+              <div>
+                <h2>Add a Review</h2>
+                <textarea
+                  name="message"
+                  value={newReview.message}
+                  onChange={handleReviewChange}
+                  placeholder="Write your review here"
+                />
+                <label>
+                  <input
+                    type="checkbox"
+                    name="recommended"
+                    checked={newReview.recommended}
+                    onChange={() => setNewReview({ ...newReview, recommended: !newReview.recommended })}
+                  />
+                  Recommended
+                </label>
+                <button onClick={handleReviewSubmit}>Submit Review</button>
+              </div>
+            )}
+
+            <h2>Reviews</h2>
+            {reviews && reviews.length > 0 ? (
+                <ul>
+                    {reviews.map((review) => (
+                        <li key={review.review_id}>
+                            <p>{review.message}</p>
+                            <p>Recommended: {review.recommended ? "Yes" : "No"}</p>
+                            {userType === "admin" && (
+                                <button onClick={() => handleDeleteReview(review.review_id)}>Delete</button>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No reviews available.</p>
+            )}
+          
+            {error && <p className="error">{error}</p>}
             <div className="game-header">
                 <h1>{game.name}</h1>
                 <div className="game-image">

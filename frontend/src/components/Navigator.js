@@ -77,6 +77,11 @@ export const getNavigateMenu = () => {
                         <MdOutlineBackup /> Make backup
                     </Link>
                 )}
+                {isAuthenticated && (
+                    <Link to="/ownership" className="nav-link">
+                        <FaRegMessage /> Ownership
+                    </Link>
+                )} 
                 <Link to="/search" className="nav-link">
                     <FaSearch /> Search
                 </Link>
